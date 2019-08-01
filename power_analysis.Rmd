@@ -1,0 +1,101 @@
+---
+title: "Power Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(brms)
+library(broom)
+library(ggthemes)
+
+```
+
+```{r}
+
+# setting up the data structure
+e_shapes = 10 # number of edgy shapes
+r_shapes = 10 # number of round shapes
+nr_shape_comb = e_shapes * r_shapes # unique shape combinations
+sd_shape_comb = .2 # sd within shapes
+
+words = 20 # number of words
+sd_words = .2 # sd within words
+
+prop_cor = 0.6 # proportion correct
+trial_sd = .05  # sd across trials
+
+# simulating the data
+
+sim_d <- function(seed, ntrial) {
+
+trials = ntrial 
+
+int = log(prop_cor/(1-prop_cor)) 
+
+set.seed(seed)
+
+err_shape_comb <-tibble(shape_comb = factor(1:shape_comb))%>%
+  mutate(err_shape = rnorm(nr_shape_comb, 0, sd_shape_comb))
+                                       
+err_words <-tibble(word = factor(1:words))%>%
+  mutate(err_word = rnorm(words, 0, sd_words))
+
+data <- tibble(trial = 1:trials,
+               word = factor(sample(1:words, trials, replace = T)),
+               shape_comb = factor(sample(1:nr_shape_comb, trials, replace = T))) %>%
+  mutate(resp = rnorm(length(trial), int, trial_sd))%>%
+  left_join(err_words)%>%
+  left_join(err_shape_comb)%>%
+  mutate(resp = resp + err_word + err_shape,
+         cor = rbinom(n=length(resp), size=1, prob=exp(resp)/(1+exp(resp))))
+}
+
+# fitting the model
+fit <-brm(cor ~ 1 + (1 |word) + (1|shape_comb),
+          data = data,
+          family = bernoulli(),
+          control = list(adapt_delta = 0.95),
+          seed = 1)
+
+
+# number of simulations
+n_sim <- 10
+
+sim <-
+  tibble(seed = 1:n_sim) %>% 
+  mutate(d    = map(seed, sim_d, ntrial = 80)) %>% 
+  mutate(fit  = map2(d, seed, ~update(fit, newdata = .x, seed = .y)))
+
+
+sim_res <- sim %>% 
+  mutate(int = map(fit, tidy, prob = .95)) %>% 
+  unnest(int) %>% 
+  filter(term == "b_Intercept")%>%
+  mutate(estimate = plogis(estimate),
+         lower = plogis(lower),
+         upper = plogis(upper))
+
+```
+
+## plot intercept (in proportion space) across simulations
+```{r}
+ggplot(sim_res, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
+  geom_hline(yintercept = 0.5, color = "black", lty = 2) +
+  ylim(0,1)+
+  geom_pointrange(fatten = 1/2) +
+  labs(x = "simulation",
+       y = "Proportion correct")+
+  theme_few()
+```
+
+
+```{r}
+sim_res %>% 
+  mutate(check = ifelse(lower > 0.5, 1, 0)) %>% 
+  summarise(power = mean(check))
+```
+
+
