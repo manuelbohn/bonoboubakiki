@@ -54,6 +54,8 @@ data <- tibble(trial = 1:trials,
 }
 
 # fitting the model
+# you need to run this once with a single simulated dataset in order to be able to later update the model with additional datasets
+# to simualte a single dataset, run the code inside the function above with a specific number for ntrials and seed
 fit <-brm(cor ~ 1 + (1 |word) + (1|shape_comb),
           data = data,
           family = bernoulli(),
@@ -64,12 +66,13 @@ fit <-brm(cor ~ 1 + (1 |word) + (1|shape_comb),
 # number of simulations
 n_sim <- 10
 
+# simulate multiple data sets and get model results via updating
 sim <-
   tibble(seed = 1:n_sim) %>% 
   mutate(d    = map(seed, sim_d, ntrial = 80)) %>% 
   mutate(fit  = map2(d, seed, ~update(fit, newdata = .x, seed = .y)))
 
-
+# extract results and convert intercept and CIs back into proportion space
 sim_res <- sim %>% 
   mutate(int = map(fit, tidy, prob = .95)) %>% 
   unnest(int) %>% 
@@ -91,7 +94,7 @@ ggplot(sim_res, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper))
   theme_few()
 ```
 
-
+## check power
 ```{r}
 sim_res %>% 
   mutate(check = ifelse(lower > 0.5, 1, 0)) %>% 
