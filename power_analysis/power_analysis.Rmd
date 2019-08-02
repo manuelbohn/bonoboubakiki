@@ -28,7 +28,7 @@ trial_sd = 0.05  # sd across trials
 
 trials = 100 # number of trials 
 
-prop_cor = .5944 # same proportion as humans in second experiment
+prop_cor = .65 # same proportion as humans in second experiment
 int = log(prop_cor/(1-prop_cor)) # transforming proportion to link space
 
 #set.seed(1)
@@ -54,7 +54,7 @@ data <- tibble(trial = 1:trials,
 fit <-brm(cor ~ 1 + (1 |word) + (1|shape_comb),
           data = data,
           family = bernoulli(),
-          control = list(adapt_delta = 0.8))
+          control = list(adapt_delta = 0.9))
 
 
 summary(fit)
@@ -113,35 +113,35 @@ sim_res_100 <-
   mutate(tidy = map(seed, sim_d_and_fit, ntrial = 100))%>%
   unnest(tidy)%>%
   mutate(trials = "100")%>%
-  saveRDS("saves/sim_100.rds")
+  saveRDS("saves/sim_100_p65.rds")
 
 sim_res_300 <-
   tibble(seed = 1:n_sim) %>% 
   mutate(tidy = map(seed, sim_d_and_fit, ntrial = 300))%>%
   unnest(tidy)%>%
   mutate(trials = "300")%>%
-  saveRDS("saves/sim_300.rds")
+  saveRDS("saves/sim_300_p65.rds")
 
 sim_res_600 <-
   tibble(seed = 1:n_sim) %>% 
   mutate(tidy = map(seed, sim_d_and_fit, ntrial = 600))%>%
   unnest(tidy)%>%
   mutate(trials = "600")%>%
-  saveRDS("saves/sim_600.rds")
+  saveRDS("saves/sim_600_p65.rds")
 
 sim_res_900 <-
   tibble(seed = 1:n_sim) %>% 
   mutate(tidy = map(seed, sim_d_and_fit, ntrial = 900))%>%
   unnest(tidy)%>%
   mutate(trials = "900")%>%
-  saveRDS("saves/sim_900.rds")
+  saveRDS("saves/sim_900_p65.rds")
 
 # load this to skip simulations (or after you ran the simulations)
 
-sim_res_100 <-readRDS("saves/sim_100.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
-sim_res_300 <-readRDS("saves/sim_300.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
-sim_res_600 <-readRDS("saves/sim_600.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
-sim_res_900 <-readRDS("saves/sim_900.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
+sim_res_100 <-readRDS("saves/sim_100_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
+sim_res_300 <-readRDS("saves/sim_300_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
+sim_res_600 <-readRDS("saves/sim_600_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
+sim_res_900 <-readRDS("saves/sim_900_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
 
 
 sim_res <- (
