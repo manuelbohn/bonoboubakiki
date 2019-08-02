@@ -136,12 +136,15 @@ sim_res_900 <-
   mutate(trials = "900")%>%
   saveRDS("saves/sim_900_p65.rds")
 
+
 # load this to skip simulations (or after you ran the simulations)
 
-sim_res_100 <-readRDS("saves/sim_100_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
-sim_res_300 <-readRDS("saves/sim_300_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
-sim_res_600 <-readRDS("saves/sim_600_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
-sim_res_900 <-readRDS("saves/sim_900_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
+#proportion from human implicit study (.59)
+
+sim_res_100 <-readRDS("saves/sim_100.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
+sim_res_300 <-readRDS("saves/sim_300.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
+sim_res_600 <-readRDS("saves/sim_600.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
+sim_res_900 <-readRDS("saves/sim_900.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
 
 
 sim_res <- (
@@ -149,6 +152,22 @@ sim_res <- (
             sim_res_300,
             sim_res_600,
             sim_res_900)
+)
+
+
+# slightly higher proportion (.65)
+
+sim_res_100_p65 <-readRDS("saves/sim_100_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
+sim_res_300_p65 <-readRDS("saves/sim_300_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
+sim_res_600_p65 <-readRDS("saves/sim_600_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
+sim_res_900_p65 <-readRDS("saves/sim_900_p65.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
+
+
+sim_res_p65 <- (
+  bind_rows(sim_res_100_p65,
+            sim_res_300_p65,
+            sim_res_600_p65,
+            sim_res_900_p65)
 )
 
 ```
@@ -173,8 +192,25 @@ ggplot(sim_res_sd, aes(x = factor(seed), y = estimate, ymin = lower, ymax = uppe
 ```
 
 
+```{r}
+sim_res_sd_p65 <- sim_res_p65 %>%
+  filter(term != "b_Intercept")
+
+sim_res_sd_p65%>%
+  group_by(trials,term)%>%
+  summarise(mean = mean(estimate))
+
+ggplot(sim_res_sd_p65, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
+  ylim(0,1.5)+
+  facet_grid(trials~term)+
+  geom_point(fatten = 1/2) +
+  labs(x = "simulation",
+       y = "sd")+
+  theme_few()
+```
 
 ## plot intercept (in proportion space) across simulations
+
 ```{r}
 sim_res_int <- sim_res %>%
   filter(term == "b_Intercept")%>%
@@ -193,9 +229,34 @@ ggplot(sim_res_int, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upp
   theme_few()
 ```
 
+```{r}
+sim_res_int_p65 <- sim_res_p65 %>%
+  filter(term == "b_Intercept")%>%
+  mutate(estimate = plogis(estimate),
+         lower = plogis(lower),
+         upper = plogis(upper))
+
+
+ggplot(sim_res_int_p65, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
+  geom_hline(yintercept = 0.5, color = "black", lty = 2) +
+  ylim(0,1)+
+  geom_pointrange(fatten = 1/2) +
+  facet_grid(trials~.)+
+  labs(x = "simulation",
+       y = "Proportion correct")+
+  theme_few()
+```
+
 ##  power
 ```{r}
 sim_res_int %>%
+  group_by(trials)%>%
+  mutate(check = ifelse(lower > 0.5, 1, 0)) %>% 
+  summarise(power = mean(check))
+```
+
+```{r}
+sim_res_int_p65 %>%
   group_by(trials)%>%
   mutate(check = ifelse(lower > 0.5, 1, 0)) %>% 
   summarise(power = mean(check))
