@@ -13,32 +13,28 @@ library(ggthemes)
 
 ```
 
+# set up data frame and run model once
+
 ```{r}
 
 # setting up the data structure
-e_shapes = 10 # number of edgy shapes
-r_shapes = 10 # number of round shapes
-nr_shape_comb = e_shapes * r_shapes # unique shape combinations
-sd_shape_comb = .1 # sd within shapes (from human implicit study)
+nr_shape_comb = 20 # unique shape combinations
+sd_shape_comb = .01 # sd within shapes (from human implicit study)
 
 words = 20 # number of words
-sd_words = .7 # sd within words (from human implicit study)
+sd_words = .5 # sd within words (from human implicit study)
 
-trial_sd = .05  # sd across trials
+trial_sd = 0.05  # sd across trials
 
-# simulating the data
-
-sim_d <- function(seed, ntrial) {
-
-#trials = 300 
-trials = ntrial 
+trials = 100 # number of trials 
 
 prop_cor = .5944 # same proportion as humans in second experiment
-int = log(prop_cor/(1-prop_cor)) 
+int = log(prop_cor/(1-prop_cor)) # transforming proportion to link space
 
 #set.seed(1)
-set.seed(seed)
+#set.seed(5)
 
+# simulate one dataset
 err_shape_comb <-tibble(shape_comb = factor(1:nr_shape_comb))%>%
   mutate(err_shape = rnorm(shape_comb, 0, sd_shape_comb))
                                        
@@ -53,54 +49,145 @@ data <- tibble(trial = 1:trials,
   left_join(err_shape_comb)%>%
   mutate(resp = resp + err_word + err_shape,
          cor = rbinom(n=length(resp), size=1, prob=exp(resp)/(1+exp(resp))))
-}
 
-# fitting the model
-# you need to run this once with a single simulated dataset in order to be able to later update the model with additional datasets
-# to simualte a single dataset, run the code inside the function above with a specific number for ntrials and seed
+# run the model 
 fit <-brm(cor ~ 1 + (1 |word) + (1|shape_comb),
           data = data,
           family = bernoulli(),
-          control = list(adapt_delta = 0.8),
-          seed = 1)
+          control = list(adapt_delta = 0.8))
 
+
+summary(fit)
+
+tidy(fit) %>%
+  filter(term == "b_Intercept" | term == "sd_shape_comb__Intercept" | term == "sd_word__Intercept")
+```
+
+```{r}
+# function for simulating
+
+sim_d_and_fit <- function(seed, ntrial) {
+
+  trials = ntrial 
+
+  set.seed(seed)
+
+  err_shape_comb <-tibble(shape_comb = factor(1:nr_shape_comb))%>%
+    mutate(err_shape = rnorm(shape_comb, 0, sd_shape_comb))
+                                       
+  err_words <-tibble(word = factor(1:words))%>%
+    mutate(err_word = rnorm(words, 0, sd_words))
+
+data <- tibble(trial = 1:trials,
+               word = factor(sample(1:words, trials, replace = T)),
+               shape_comb = factor(sample(1:nr_shape_comb, trials, replace = T))) %>%
+  mutate(resp = rnorm(length(trial), int, trial_sd))%>%
+  left_join(err_words)%>%
+  left_join(err_shape_comb)%>%
+  mutate(resp = resp + err_word + err_shape,
+         cor = rbinom(n=length(resp), size=1, prob=exp(resp)/(1+exp(resp))))
+
+update(fit,
+         newdata = data, 
+         seed = seed) %>% 
+    tidy(prob = .95) %>% 
+    filter(term == "b_Intercept" | term == "sd_shape_comb__Intercept" | term == "sd_word__Intercept")
+}
+
+```
+
+
+
+```{r, message=F, warning=F}
 
 # number of simulations
 n_sim <- 100
-
 # simulate multiple data sets and get model results via updating
 
 # takes about 15min to run 
-# load one of the next lines to skip
-# sim_res <- readRDS("saves/sim_300.rds") # less variation between trials (.05)
-# sim_res <- readRDS("saves/sim_300_2.rds") # more variation between trials (.5)
-# sim_res <- readRDS("saves/sim_300_3.rds") # sd for word and shape_comb variation based on model for human explicit data
-# sim_res <- readRDS("saves/sim_300_4.rds") # sd for word and shape_comb variation based on model for human implicit data
+# load lines below to skip simulations (need to load them after running simulation anyway becasue output is automatically saved)
 
-sim <-
+# simulations
+sim_res_100 <-
   tibble(seed = 1:n_sim) %>% 
-  mutate(d    = map(seed, sim_d, ntrial = 300)) %>% 
-  mutate(fit  = map2(d, seed, ~update(fit, newdata = .x, seed = .y)))
+  mutate(tidy = map(seed, sim_d_and_fit, ntrial = 100))%>%
+  unnest(tidy)%>%
+  mutate(trials = "100")%>%
+  saveRDS("saves/sim_100.rds")
 
-# extract results and convert intercept and CIs back into proportion space
-sim_res <- sim %>% 
-  mutate(int = map(fit, tidy, prob = .95)) %>% 
-  unnest(int) %>% 
+sim_res_300 <-
+  tibble(seed = 1:n_sim) %>% 
+  mutate(tidy = map(seed, sim_d_and_fit, ntrial = 300))%>%
+  unnest(tidy)%>%
+  mutate(trials = "300")%>%
+  saveRDS("saves/sim_300.rds")
+
+sim_res_600 <-
+  tibble(seed = 1:n_sim) %>% 
+  mutate(tidy = map(seed, sim_d_and_fit, ntrial = 600))%>%
+  unnest(tidy)%>%
+  mutate(trials = "600")%>%
+  saveRDS("saves/sim_600.rds")
+
+sim_res_900 <-
+  tibble(seed = 1:n_sim) %>% 
+  mutate(tidy = map(seed, sim_d_and_fit, ntrial = 900))%>%
+  unnest(tidy)%>%
+  mutate(trials = "900")%>%
+  saveRDS("saves/sim_900.rds")
+
+# load this to skip simulations (or after you ran the simulations)
+
+sim_res_100 <-readRDS("saves/sim_100.rds") # sd for word and shape_comb variation based on model for human implicit data, 100 trials
+sim_res_300 <-readRDS("saves/sim_300.rds") # sd for word and shape_comb variation based on model for human implicit data, 300 trials
+sim_res_600 <-readRDS("saves/sim_600.rds") # sd for word and shape_comb variation based on model for human implicit data, 600 trials
+sim_res_900 <-readRDS("saves/sim_900.rds") # sd for word and shape_comb variation based on model for human implicit data, 900 trials
+
+
+sim_res <- (
+  bind_rows(sim_res_100,
+            sim_res_300,
+            sim_res_600,
+            sim_res_900)
+)
+
+```
+
+# plot random effect sd
+
+```{r}
+sim_res_sd <- sim_res %>%
+  filter(term != "b_Intercept")
+
+sim_res_sd%>%
+  group_by(trials,term)%>%
+  summarise(mean = mean(estimate))
+
+ggplot(sim_res_sd, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
+  ylim(0,1.5)+
+  facet_grid(trials~term)+
+  geom_point(fatten = 1/2) +
+  labs(x = "simulation",
+       y = "sd")+
+  theme_few()
+```
+
+
+
+## plot intercept (in proportion space) across simulations
+```{r}
+sim_res_int <- sim_res %>%
   filter(term == "b_Intercept")%>%
   mutate(estimate = plogis(estimate),
          lower = plogis(lower),
          upper = plogis(upper))
 
-saveRDS(sim_res, "saves/sim_300_4.rds")
 
-```
-
-## plot intercept (in proportion space) across simulations
-```{r}
-ggplot(sim_res, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
+ggplot(sim_res_int, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper)) +
   geom_hline(yintercept = 0.5, color = "black", lty = 2) +
   ylim(0,1)+
   geom_pointrange(fatten = 1/2) +
+  facet_grid(trials~.)+
   labs(x = "simulation",
        y = "Proportion correct")+
   theme_few()
@@ -108,7 +195,8 @@ ggplot(sim_res, aes(x = factor(seed), y = estimate, ymin = lower, ymax = upper))
 
 ##  power
 ```{r}
-sim_res %>% 
+sim_res_int %>%
+  group_by(trials)%>%
   mutate(check = ifelse(lower > 0.5, 1, 0)) %>% 
   summarise(power = mean(check))
 ```
