@@ -1,5 +1,5 @@
 ## Created:  Jul 15 2019, Monday 06:21 PM
-fixedDataFile=Matt1.csv
+fixedDataFile=demoFoils.csv
 mode=MTS_IMAGEANDSOUND
 lines=1
 numRows=3
@@ -30,7 +30,7 @@ blueScreen=0
 shortcutSequence=
 shortcutDistractorSequence=
 newWordsSequence=
-config=Mattias_Config.txt
+config=demoFoils.txt
 pics=NA
 useShortcut=0
 shortcutPath=Lexigrams/%NAME%/%NAME%.jpg=Lexigrams/%NAME%/%NAME%.wav

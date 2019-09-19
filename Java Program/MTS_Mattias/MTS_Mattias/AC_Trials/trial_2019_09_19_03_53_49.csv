@@ -1,0 +1,14 @@
+Notes, Time, Trial, Target, Tgt_loc, Foil1, F1_loc, Foil2, F2_loc, Foil3, F3_loc,Foil4,F4_loc,Selected, RT, Correct, SampleMode, FoilType, FileType, noStartButton, disableFeedback, identicalImages, Comment
+File: trial_2019_09_19_03_53_49.csv
+Run: Sep 19 2019
+config=Mattias_Config.txt
+fixedDataFile=demoFoils.csv
+..could not load sound: D:\GitHub\bonoboubakiki\Java Program\MTS_Mattias\MTS_Mattias/Lexigrams//.wav
+..could not load sound: D:\GitHub\bonoboubakiki\Java Program\MTS_Mattias\MTS_Mattias/Lexigrams//.wav
+
+,3:53:50 PM,1,,1_2,,,,,,,,0.6,true,MTS_ImageAndSoundMTSS,PIC,,0,0,0,
+,3:53:58 PM,2,Popsicle,2_1,Ear,2_2,,,,,,,Popsicle,1.103,true,MTS_SoundOnly,PIC,,0,0,0,
+,3:54:02 PM,3,gogo,1_2,zeze,2_0,,,,,,,gogo,0.964,true,MTS_SoundOnly,PIC,,0,1,0,
+,3:54:06 PM,4,Car,1_2,Egg,2_2,Book,0_1,,,,,,,Car,1.905,true,MTS_SoundOnly,PIC,,0,0,0,
+,3:54:11 PM,5,Raisin,1_2,Peanut,2_0,Dog,1_0,Book,2_2,,,,,,,Raisin,1.304,true,MTS_SoundOnly,PIC,,0,0,0,
+,3:54:15 PM,6,Peanut,1_2,Bread,0_1,Camera,0_2,Raisin,0_0,Dog,2_1,,,,,,,Peanut,1.501,true,MTS_SoundOnly,PIC,,0,0,0,
