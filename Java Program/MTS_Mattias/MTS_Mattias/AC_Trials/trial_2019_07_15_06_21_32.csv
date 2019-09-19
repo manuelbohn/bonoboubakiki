@@ -1,0 +1,7 @@
+Notes, Time, Trial, Target, Tgt_loc, Foil1, F1_loc, Foil2, F2_loc, Foil3, F3_loc,Foil4,F4_loc,Selected, RT, Correct, SampleMode, FoilType, FileType, noStartButton, disableFeedback, identicalImages, Comment
+File: trial_2019_07_15_06_21_32.csv
+Run: Jul 15 2019
+config=Mattias_Config.txt
+fixedDataFile=Matt1.csv
+
+,6:21:33 PM,1,

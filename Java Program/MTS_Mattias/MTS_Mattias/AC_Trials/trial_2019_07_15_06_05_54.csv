@@ -1,0 +1,18 @@
+Notes, Time, Trial, Target, Tgt_loc, Foil1, F1_loc, Foil2, F2_loc, Foil3, F3_loc,Foil4,F4_loc,Selected, RT, Correct, SampleMode, FoilType, FileType, noStartButton, disableFeedback, identicalImages, Comment
+File: trial_2019_07_15_06_05_54.csv
+Run: Jul 15 2019
+config=Mattias_Config.txt
+fixedDataFile=Matt1.csv
+
+,6:05:55 PM,1,Raisin,1_2,Peanut,1_0,Dog,2_1,,,,,,,Raisin,1.507,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:02 PM,2,gogo,0_0,zeze,0_2,,,,,,,gogo,1.711,true,MTS_SoundOnly,PIC,,0,1,0,
+,6:06:07 PM,3,Popsicle,2_2,Ear,1_2,Egg,2_1,,,,,,,Popsicle,1.207,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:11 PM,4,zizi,0_0,gogo,0_1,,,,,,,zizi,1.307,true,MTS_SoundOnly,PIC,,0,1,0,
+,6:06:16 PM,5,Apple,0_1,Grapes,0_2,Crayon,1_2,,,,,,,Apple,1.308,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:20 PM,6,lolo,1_2,sese,0_1,,,,,,,lolo,1.009,true,MTS_SoundOnly,PIC,,0,1,0,
+,6:06:24 PM,7,Bird,2_2,Blanket,2_1,Book,1_0,,,,,,,Bird,1.612,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:29 PM,8,zeze,2_2,nono,1_0,,,,,,,zeze,1.607,true,MTS_SoundOnly,PIC,,0,1,0,
+,6:06:34 PM,9,Banana,1_2,Bread,2_0,Camera,0_2,,,,,,,Banana,1.209,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:38 PM,10,nono,0_0,zizi,2_2,,,,,,,nono,1.809,true,MTS_SoundOnly,PIC,,0,1,0,
+,6:06:43 PM,11,Dog,1_2,Bubbles,2_0,Balloon,0_0,,,,,,,Dog,1.006,true,MTS_SoundOnly,PIC,,0,0,0,
+,6:06:48 PM,12,sese,2_2,lolo,0_2,,,,,,,lolo,1.813,false,MTS_SoundOnly,PIC,,0,1,0,
