@@ -1,0 +1,9 @@
+Notes, Time, Trial, Target, Tgt_loc, Foil1, F1_loc, Foil2, F2_loc, Foil3, F3_loc,Foil4,F4_loc,Selected, RT, Correct, SampleMode, FoilType, FileType, noStartButton, disableFeedback, identicalImages, Comment
+File: trial_2019_09_24_08_09_42.csv
+Run: Sep 24 2019
+config=Mattias_Config.txt
+fixedDataFile=Matt1.csv
+
+,8:09:43 PM,1,Raisin,2_2,Peanut,2_0,Dog,1_0,,,,,,,Peanut,4.211,false,MTS_SoundOnly,PIC,,0,0,0,
+,8:09:51 PM,2,gogo,2_2,zeze,0_2,,,,,,,gogo,0.702,true,MTS_SoundOnly,PIC,,0,1,0,
+,8:09:55 PM,3,Popsicle,2_0,Ear,2_2,Egg,0_2,,,,,,,Popsicle,0.704,true,MTS_SoundOnly,PIC,,0,0,0,

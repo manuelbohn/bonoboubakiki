@@ -1,7 +1,0 @@
-Sample,Correct,Foil1,Foil2,Foil3,Foil4,Trial_Type,SampleMode,FoilType,noStartButton,disableFeedback,Comment
-,,,,,,,,,,,
-Popsicle,Popsicle,Ear,,,,,3,0,0,0,filler
-gogo,gogo,zeze,,,,,3,0,0,1,test for round
-Car,Car,Egg,Book,,,,3,0,0,0,filler
-Raisin,Raisin,Peanut,Dog,Book,,,3,0,0,0,filler
-Peanut,Peanut,Bread,Camera,Raisin,Dog,,3,0,0,0,filler
