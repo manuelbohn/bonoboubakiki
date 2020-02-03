@@ -1,0 +1,90 @@
+---
+title: "Power Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(brms)
+library(broom)
+library(ggthemes)
+
+# langcog package is installed by running
+# install.packages("devtools")
+# devtools::install_github("langcog/langcog")
+
+library(langcog)
+
+
+
+```
+
+# load pilot data
+```{r}
+raw_data <- read_csv("../Data/Pre_Test/MTS_2020_02_01_12_39_08.csv", skip = 3)
+
+pilot_data <- raw_data %>%
+  mutate(session = "pilot1",
+         correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0),
+         shape_combination  = paste(Correct,Foil1, sep = "_"))%>%
+  na.omit(correct)
+
+```
+# model for pilot data
+
+```{r}
+
+# run the model 
+# all sounds are unique, all shape combinations are unique, so no random effects here
+
+pilot <-brm(correct ~ 1 ,
+          data = pilot_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4, 
+          iter = 2000,
+          control = list(adapt_delta = 0.99))
+
+
+summary(pilot)
+
+
+```
+
+# visualize model and data
+
+```{r}
+
+# CI based on non-parametric bootstrap of the data
+plot1 <- pilot_data%>%
+  group_by(session)%>%
+  multi_boot_standard(col = "correct")%>%
+  mutate(source = "data")
+
+# CI based on model above
+plot2 <-as.tibble(fixef(pilot))%>%
+  mutate(ci_lower = plogis(Q2.5),
+         ci_upper = plogis(Q97.5),
+         mean = plogis(Estimate),
+         source = "model")
+
+# Joining model and data
+plot <- bind_rows(
+  plot1, 
+  plot2
+)
+
+
+ggplot(plot, aes(x = source))+
+  geom_hline(yintercept = 0.5, lty = 2)+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower, col = source))+
+  ylim(0,1)+
+  ylab("Proportion correct")+
+  scale_color_ptol()+
+  theme_minimal()
+
+
+```
+
