@@ -14,8 +14,12 @@ newlist<-character(0)
 for (Word in 1:100){
  # here is the position of the new variable "Word" 
   if (Word==1){
-    #b1 is a new vector where all the items of the Foil vector are selected except of Word
-    b1<-data1$Foil[!data1$Foil %in% data1$Foil[Word]]
+   #c is a vector and splits Foil into two strings, seperated by "_"
+      c<-strsplit(as.vector(data2$Foil),"_")
+   #gg is a two column matrix and each column correspondes to the two above strings
+      gg = matrix(unlist(c), ncol=2, byrow=TRUE)
+   #b1 is a new vector where all the items of the Foil vector are selected except of Word
+      b1<-data2$Foil[!gg[,1] %in% gg[,1][Word]]
     #shuffle all the items from b1 and select one 
     oneword = sample(b1,1)
     #then add the new selected word to the list
