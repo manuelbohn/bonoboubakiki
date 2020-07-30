@@ -1,0 +1,92 @@
+---
+title: "Power Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(brms)
+library(broom)
+library(ggthemes)
+
+# langcog package is installed by running
+# install.packages("devtools")
+# devtools::install_github("langcog/langcog")
+
+library(langcog)
+
+
+
+```
+
+# load pilot data
+```{r}
+read_plus <- function(flnm) {
+    read_csv(flnm, skip = 3) %>% 
+        mutate(filename = flnm, 
+               trial = 1:length(SampleSound))
+}
+
+
+raw_data <- list.files(path = "../Data/Testing/",
+                       pattern = "*.csv",
+                       full.names = T) %>% 
+  map_df(~read_plus(.))
+
+data <- raw_data %>%
+  filter(trial != 1)%>%
+  mutate(session = "pilot1",
+         correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0),
+         shape_combination  = paste(Correct,Foil1, sep = "_"), 
+         session = as.numeric(factor(filename)), 
+         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"))%>%
+  na.omit(correct)
+
+```
+
+# Descriptives
+
+```{r}
+data %>%
+  group_by(condition)%>%
+  summarise(n())
+```
+
+
+# visualize data overall
+
+```{r}
+
+# CI based on non-parametric bootstrap of the data
+plot <- data%>%
+  group_by(condition)%>%
+  multi_boot_standard(col = "correct")
+
+ggplot(plot, aes(x = condition))+
+  geom_hline(yintercept = 0.5, lty = 2)+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower, col = condition))+
+  ylim(0,1)+
+  ylab("Proportion correct")+
+  scale_color_ptol()+
+  theme_minimal()
+
+
+```
+```{r}
+plot1 <- data%>%
+  group_by(session,condition)%>%
+  multi_boot_standard(col = "correct")
+
+ggplot(plot1, aes(x = session, col = condition))+
+  geom_hline(yintercept = 0.5, lty = 2)+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower))+
+  geom_line(aes(y= mean, col = condition))+
+  ylim(0,1)+
+  facet_grid(~condition)+
+  ylab("Proportion correct")+
+  scale_color_ptol()+
+  theme_minimal()
+```
+
