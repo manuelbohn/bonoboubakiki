@@ -48,12 +48,27 @@ data <- raw_data %>%
 
 # Descriptives
 
+## No Trials
+
 ```{r}
 data %>%
   group_by(condition)%>%
   summarise(n())
 ```
 
+## RT
+
+```{r}
+rt_data <- data%>%
+  mutate(outlier = ifelse(RT>5999, "yes", "no"))
+
+ggplot(rt_data, aes(x = condition, y = RT, col = outlier, pch = outlier))+
+  geom_jitter(alpha = .7, width = .2, height = 0)+
+  ylim(0,6000)+
+  ylab("Reaction Time")+
+  scale_color_ptol()+
+  theme_minimal()
+```
 
 # visualize data overall
 
