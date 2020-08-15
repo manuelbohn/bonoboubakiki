@@ -27,7 +27,8 @@ library(langcog)
 read_plus <- function(flnm) {
     read_csv(flnm, skip = 3) %>% 
         mutate(filename = flnm, 
-               trial = 1:length(SampleSound))
+               trial = 1:length(SampleSound),
+               RT = as.character(RT))
 }
 
 
@@ -41,7 +42,8 @@ data <- raw_data %>%
   mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0),
          shape_combination  = paste(Correct,Foil1, sep = "_"), 
          session = as.numeric(factor(filename)), 
-         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"))%>%
+         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"),
+         RT = as.numeric(RT))%>%
   na.omit(correct)
 
 ```
