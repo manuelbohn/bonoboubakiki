@@ -141,6 +141,9 @@ test_data <- data %>%
 bm_test <- brm(correct ~ 1 + (1|SampleSound) + (1 | shape_combination),
           data = test_data,
           family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          iter = 10000,
           control = list(adapt_delta = 0.95))
 
 bm_test
