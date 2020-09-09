@@ -11,12 +11,7 @@ library(brms)
 library(broom)
 library(ggthemes)
 library(lme4)
-
-# langcog package is installed by running
-# install.packages("devtools")
-# devtools::install_github("langcog/langcog")
-
-library(langcog)
+library(tidyboot)
 
 
 
@@ -80,7 +75,7 @@ ggplot(rt_data, aes(x = condition, y = RT, col = correct, pch = correct))+
 # CI based on non-parametric bootstrap of the data
 plot <- data%>%
   group_by(condition)%>%
-  multi_boot_standard(col = "correct")
+  tidyboot_mean(col = correct)
 
 ggplot(plot, aes(x = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
@@ -97,7 +92,7 @@ ggplot(plot, aes(x = condition))+
 ```{r}
 plot1 <- data%>%
   group_by(session,condition)%>%
-  multi_boot_standard(col = "correct")
+  tidyboot_mean(col = correct)
 
 ggplot(plot1, aes(x = session, col = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
@@ -117,7 +112,7 @@ plot2 <- data%>%
   filter(condition == "test")%>%
   mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))%>%
   group_by(test_shape)%>%
-  multi_boot_standard(col = "correct")
+  tidyboot_mean(col = correct)
 
 ggplot(plot2, aes(x = test_shape, col = test_shape))+
   geom_hline(yintercept = 0.5, lty = 2)+
