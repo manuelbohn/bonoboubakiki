@@ -71,7 +71,10 @@ ggplot(rt_data, aes(x = condition, y = RT, col = correct, pch = correct))+
 # visualize data overall
 
 ```{r}
-
+# data from individual sessions
+plot_session <- data%>%
+  group_by(session,condition)%>%
+  tidyboot_mean(col = correct)
 # CI based on non-parametric bootstrap of the data
 plot <- data%>%
   group_by(condition)%>%
@@ -79,6 +82,7 @@ plot <- data%>%
 
 ggplot(plot, aes(x = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
+  geom_jitter(data = plot_session, aes(x= condition, y = mean, col = condition), alpha = 0.5, width = 0.05, height = 0)+
   geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower, col = condition))+
   ylim(0,1)+
   ylab("Proportion correct")+
@@ -90,11 +94,7 @@ ggplot(plot, aes(x = condition))+
 # data by session
 
 ```{r}
-plot1 <- data%>%
-  group_by(session,condition)%>%
-  tidyboot_mean(col = correct)
-
-ggplot(plot1, aes(x = session, col = condition))+
+ggplot(plot_session, aes(x = session, col = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
   geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower))+
   geom_line(aes(y= mean, col = condition))+
