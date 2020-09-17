@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = F)
 
 library(tidyverse)
 library(brms)
@@ -99,7 +99,7 @@ ggplot(plot_session, aes(x = session, col = condition))+
   geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower))+
   geom_line(aes(y= mean, col = condition))+
   ylim(0,1)+
-  facet_grid(~condition)+
+  facet_grid(condition~.)+
   ylab("Proportion correct")+
   scale_color_ptol()+
   theme_minimal()
@@ -127,7 +127,8 @@ ggplot(plot2, aes(x = test_shape, col = test_shape))+
 # Test Models
 ```{r}
 test_data <- data %>%
-  filter(condition == "test")
+  filter(condition == "test")%>%
+  mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))
 ```
 
 # Test: Bayesian
@@ -142,6 +143,20 @@ bm_test <- brm(correct ~ 1 + (1|SampleSound) + (1 | shape_combination),
           control = list(adapt_delta = 0.95))
 
 bm_test
+```
+
+## Test: Shape preference
+
+```{r}
+bm_shape <- brm(correct ~ test_shape + (1|SampleSound) + (1 | shape_combination),
+          data = test_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          iter = 10000,
+          control = list(adapt_delta = 0.95))
+
+bm_shape
 ```
 
 # Test: Frequentist
