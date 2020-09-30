@@ -88,8 +88,6 @@ ggplot(plot, aes(x = condition))+
   ylab("Proportion correct")+
   scale_color_ptol()+
   theme_minimal()
-
-
 ```
 # data by session
 
@@ -170,6 +168,21 @@ fm_test <- glmer(correct ~ 1 + (1|SampleSound) + (1 | shape_combination),
 summary(fm_test)
 
 ```
+
+
+## Test: Shape preference
+
+```{r}
+fm_test <- glmer(correct ~ test_shape + (1|SampleSound) + (1 | shape_combination), 
+              data = test_data, 
+              family = binomial, 
+              control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
+
+summary(fm_test)
+
+drop1(fm_test, test = "Chisq")
+```
+
 
 # Filler Models
 ```{r}
