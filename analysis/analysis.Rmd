@@ -65,12 +65,12 @@ rt_data <- data%>%
   mutate(outlier = ifelse(RT>5999, "yes", "no"),
          correct = ifelse(correct == 1, "correct", "wrong"))
 
-ggplot(rt_data, aes(x = condition, y = RT, col = correct, pch = correct))+
-  geom_jitter(alpha = .7, width = .2, height = 0)+
-  ylim(0,6000)+
-  ylab("Reaction Time")+
-  scale_color_ptol()+
-  theme_minimal()
+# ggplot(rt_data, aes(x = condition, y = RT, col = correct, pch = correct))+
+#   geom_jitter(alpha = .7, width = .2, height = 0)+
+#   ylim(0,6000)+
+#   ylab("Reaction Time")+
+#   scale_color_ptol()+
+#   theme_minimal()
 
 ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = correct))+
   geom_density(alpha = .5, size = 1)+
