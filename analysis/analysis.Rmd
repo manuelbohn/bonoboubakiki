@@ -252,10 +252,6 @@ bm_filler <- brm(correct ~ 1 + (z_trial | SampleSound ) + (z_trial | shape_combi
           iter = 20000,
           control = list(adapt_delta = 0.99, max_treedepth = 20))
 
-saveRDS(bm_filler, "saves/model_filler.rds")
-
-bm_filler <-readRDS("saves/model_filler.rds")
-
 bm_filler
 ```
 
