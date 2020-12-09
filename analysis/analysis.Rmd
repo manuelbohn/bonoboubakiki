@@ -12,12 +12,15 @@ library(broom)
 library(ggthemes)
 library(lme4)
 library(tidyboot)
-
+library(ggpubr)
+library(tidybayes)
 
 
 ```
 
-# load data
+# Load data
+
+Each test session produced a separate `.csv` file. Here we read in all files and combine them in one datafile. 
 ```{r}
 read_plus <- function(flnm) {
     read_csv(flnm, skip = 3) %>% 
@@ -34,18 +37,19 @@ raw_data <- list.files(path = "../Data/Testing/",
 
 data <- raw_data %>%
   filter(trial != 1)%>%
-  mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0),
-         shape_combination  = paste(Correct,Foil1, sep = "_"), 
-         session = as.numeric(factor(filename)), 
-         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"),
+  mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0), # re-code response variable for analysis. "Yes (R)" refers to trials with a reward
+         shape_combination  = paste(Correct,Foil1, sep = "_"), # generate variable for specific shape combination
+         session = as.numeric(factor(filename)), # generate numeric session number,
+         cont_trial = trial + (session -1) * 100, #generate a continous trial number across sessions
+         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"), # generate variable tracking whether it's a test or a filler trial. Test trials had pictures that were named E/RSlide or E/Rshape
          RT = as.numeric(RT))%>%
   na.omit(correct)
-
 ```
-
 # Descriptives
 
-## No Trials
+## Number of Trials
+
+Number of trials per condition. There were 30 sessions in total, each with 10 test trials. There are 2 filler trials missing, becasue they timed out (> 6000ms to react). 
 
 ```{r}
 data %>%
@@ -53,8 +57,9 @@ data %>%
   summarise(n())
 ```
 
-## RT
+## Reaction times
 
+Visualize reaction time by correct choice and trial time to check if responses were slower / faster in test trials compared to filler trials. Responses seem to be slightly faster in test trials, but still fall very well inside the distribution of filler trials. 
 ```{r}
 rt_data <- data%>%
   mutate(outlier = ifelse(RT>5999, "yes", "no"),
@@ -66,9 +71,22 @@ ggplot(rt_data, aes(x = condition, y = RT, col = correct, pch = correct))+
   ylab("Reaction Time")+
   scale_color_ptol()+
   theme_minimal()
-```
 
-# visualize data overall
+ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = correct))+
+  geom_density(alpha = .5, size = 1)+
+  xlim(0,6000)+
+  xlab("Reaction Time")+
+  scale_color_colorblind()+
+  scale_fill_colorblind()+
+  theme_minimal()
+```
+# Results
+
+## Visualizations
+
+### Correct choice in filler and test trials
+
+Visualize the results overall (A) and by session (B). Error bars show 95% confidence intervals. Light dots in A show session means.
 
 ```{r}
 # data from individual sessions
@@ -80,32 +98,45 @@ plot <- data%>%
   group_by(condition)%>%
   tidyboot_mean(col = correct)
 
+ggarrange(
+  
 ggplot(plot, aes(x = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
-  geom_jitter(data = plot_session, aes(x= condition, y = mean, col = condition), alpha = 0.5, width = 0.05, height = 0)+
-  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower, col = condition))+
+  geom_jitter(data = plot_session, aes(x= condition, y = mean, col = condition), alpha = 0.2, width = 0.05, height = 0)+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower, col = condition), pch = 5)+
   ylim(0,1)+
   ylab("Proportion correct")+
-  scale_color_ptol()+
-  theme_minimal()
-```
-# data by session
+  scale_color_colorblind()+
+  theme_minimal(),
 
-```{r}
 ggplot(plot_session, aes(x = session, col = condition))+
   geom_hline(yintercept = 0.5, lty = 2)+
-  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower))+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower), pch = 5)+
   geom_line(aes(y= mean, col = condition))+
   ylim(0,1)+
   facet_grid(condition~.)+
   ylab("Proportion correct")+
-  scale_color_ptol()+
-  theme_minimal()
+  scale_color_colorblind()+
+  theme_minimal(),
+widths = c(1, 1.5),
+nrow = 1,
+ncol = 2,
+common.legend = T,
+legend = "right",
+labels = c("A","B")
+)
 ```
+### Correct choice in edgy vs. round trials
 
-# test trials, round vs. edgy
+In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. The plot below shows correct responses for round vs. edgy test trials. Error bars show 95% confidence intervals, light dots show session means. 
 
 ```{r}
+plot1 <- data%>%
+  filter(condition == "test")%>%
+  mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))%>%
+  group_by(session, test_shape)%>%
+  summarise(mean = mean(correct))
+
 plot2 <- data%>%
   filter(condition == "test")%>%
   mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))%>%
@@ -114,102 +145,130 @@ plot2 <- data%>%
 
 ggplot(plot2, aes(x = test_shape, col = test_shape))+
   geom_hline(yintercept = 0.5, lty = 2)+
-  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower))+
+  geom_jitter(data = plot1, aes(x= test_shape, y = mean, col = test_shape), alpha = 0.2, width = 0.05, height = 0)+
+  geom_pointrange(aes(y = mean, ymax = ci_upper, ymin = ci_lower), pch = 5)+
   geom_line(aes(y= mean, col = test_shape))+
   ylim(0,1)+
   ylab("Proportion correct")+
   scale_color_ptol()+
   theme_minimal()
 ```
+## Statistical analysis
 
-# Test Models
 ```{r}
 test_data <- data %>%
   filter(condition == "test")%>%
-  mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))
+  mutate(test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"),
+         z_trial = scale(cont_trial))
+
+filler_data <- data %>%
+  filter(condition == "filler")%>%
+  mutate(z_trial = scale(cont_trial))
+
 ```
 
-# Test: Bayesian
+### Test trials 
+
+#### Comparison to chance
+
+We use a generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we infer that if the 95% credible interval around the intercept estimate does not include 0, performance is reliably above chance.
+
+All models use default priors as implemented in the `brms` package.
 
 ```{r}
-bm_test <- brm(correct ~ 1 + (1|SampleSound) + (1 | shape_combination),
+# model takes a minute or two to initialize and run.
+# load rds file if you don't want to wait or if you want to reproduce the numbers in the exact manuscript
+
+bm_test <- brm(correct ~ 1 + (z_trial | SampleSound ) + (z_trial | shape_combination),
           data = test_data,
           family = bernoulli(),
           cores = 4,
           chains = 4,
-          iter = 10000,
+          iter = 5000,
           control = list(adapt_delta = 0.95))
+
+saveRDS(bm_test, "saves/model_test.rds")
+
+bm_test <-readRDS("saves/model_test.rds")
 
 bm_test
 ```
 
-## Test: Shape preference
+```{r}
+bm_test%>%
+  spread_draws(b_Intercept)%>%
+  ggplot(aes(x = b_Intercept, fill = stat(x < -0.15 | x > 0.55))) +
+  stat_halfeye(alpha = .7)+
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  xlab("Intercept")+
+  scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
+  guides(fill = F)+
+  theme_minimal()
+```
+
+
+#### Shape preference
 
 ```{r}
-bm_shape <- brm(correct ~ test_shape + (1|SampleSound) + (1 | shape_combination),
+bm_shape <- brm(correct ~ test_shape + (z_trial | SampleSound ) + (z_trial | shape_combination),
           data = test_data,
           family = bernoulli(),
           cores = 4,
           chains = 4,
-          iter = 10000,
+          iter = 5000,
           control = list(adapt_delta = 0.95))
+
+saveRDS(bm_shape, "saves/model_shape.rds")
+
+bm_shape <-readRDS("saves/model_shape.rds")
 
 bm_shape
 ```
 
-# Test: Frequentist
-
 ```{r}
-fm_test <- glmer(correct ~ 1 + (1|SampleSound) + (1 | shape_combination), 
-              data = test_data, 
-              family = binomial, 
-              control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
-
-summary(fm_test)
-
+bm_shape%>%
+  spread_draws(b_test_shaperound)%>%
+  ggplot(aes(x = b_test_shaperound, fill = stat(x < -0.48 | x > 1.00))) +
+  stat_halfeye(alpha = .7)+
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  xlab("Estimate: test shape")+
+  scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
+  guides(fill = F)+
+  theme_minimal()
 ```
+### Filler trials
 
-
-## Test: Shape preference
-
-```{r}
-fm_test <- glmer(correct ~ test_shape + (1|SampleSound) + (1 | shape_combination), 
-              data = test_data, 
-              family = binomial, 
-              control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
-
-summary(fm_test)
-
-drop1(fm_test, test = "Chisq")
-```
-
-
-# Filler Models
-```{r}
-filler_data <- data %>%
-  filter(condition == "filler")
-```
-
-# Filler: Bayesian
+#### Comparison to chance
 
 ```{r}
-bm_filler <- brm(correct ~ 1 + (1|SampleSound) + (1 | shape_combination),
+# model takes a long time to run
+# output is too large to be put into GitHub repository
+
+bm_filler <- brm(correct ~ 1 + (z_trial | SampleSound ) + (z_trial | shape_combination),
           data = filler_data,
           family = bernoulli(),
-          control = list(adapt_delta = 0.95))
+          cores = 4,
+          chains = 4,
+          iter = 20000,
+          control = list(adapt_delta = 0.99, max_treedepth = 20))
+
+saveRDS(bm_filler, "saves/model_filler.rds")
+
+bm_filler <-readRDS("saves/model_filler.rds")
 
 bm_filler
 ```
 
 
-# Test: Frequentist
-
 ```{r}
-fm_filler <- glmer(correct ~ 1 + (1|SampleSound) + (1 | shape_combination), 
-              data = filler_data, 
-              family = binomial, 
-              control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5)))
-
-summary(fm_filler)
-
+bm_filler%>%
+  spread_draws(b_Intercept)%>%
+  ggplot(aes(x = b_Intercept, fill = stat(x < 2.00 | x > 4.59))) +
+  stat_halfeye(alpha = .7)+
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  xlab("Intercept")+
+  scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
+  guides(fill = F)+
+  theme_minimal()
 ```
+

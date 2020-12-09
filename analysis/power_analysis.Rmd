@@ -105,7 +105,7 @@ n_sim <- 100
 # simulate multiple data sets and get model results via updating
 
 # takes about 15min to run 
-# load lines below to skip simulations (need to load them after running simulation anyway becasue output is automatically saved)
+# load lines below to skip simulations (need to load them after running simulation anyway because output is automatically saved)
 
 # simulations
 sim_res_100 <-
