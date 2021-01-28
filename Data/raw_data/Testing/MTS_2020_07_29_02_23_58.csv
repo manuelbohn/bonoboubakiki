@@ -1,0 +1,108 @@
+Date: Jul 29, 2020 2:23 PM
+loaded: CONFIG/Session05.txt
+subject: kz_072920_5
+
+SamplePic,SampleSound,SampleMovie,r,c,Correct,r,c,Foil1,r,c,Foil2,r,c,Foil3,r,c,Foil4,r,c,SampleMode,Feedback,Correct, RT,Comment
+
+none,Empty.wav,none,0,0,Car_03.jpg,2,3,Bird_05.jpg,3,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1477,SAMPLE MODE 2;- sound only
+none,Peanut.wav,none,0,0,Peanut_02.jpg,1,3,Hand_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1424,SAMPLE MODE 2 - sound only
+none,Sweet Potato.wav,none,0,0,Sweet Potato_02.jpg,3,3,Backpack_02.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1221,SAMPLE MODE 2 - sound only
+none,Cheese.wav,none,0,0,Cheese_02.jpg,3,3,Stethoscope_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,NO,1812,SAMPLE MODE 2 - sound only
+none,Dog.wav,none,0,0,Dog_01.jpg,1,1,Watermelon_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1967,SAMPLE MODE 2 - sound only
+none,Carrot.wav,none,0,0,Carrot_02.jpg,1,1,Turtle_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,NO,1489,SAMPLE MODE 2 - sound only
+none,Shirt.wav,none,0,0,Shirt_01.jpg,3,2,Tv_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1035,SAMPLE MODE 2 - sound only
+none,Water.wav,none,0,0,Water_02.jpg,2,1,Squirrel_02.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1242,SAMPLE MODE 2 - sound only
+none,mumu.wav,none,0,0,RSlide33.jpg,3,2,Eshape4.jpg,2,3,none,0,0,none,0,0,none,0,0,2,no,YES,806,SAMPLE MODE 2 - sound only
+none,Peas.wav,none,0,0,Peas_01.jpg,3,2,Strawberries_01.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1107,SAMPLE MODE 2 - sound only
+none,Mushroom.wav,none,0,0,Mushroom_02.jpg,1,1,Orangutan_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1176,SAMPLE MODE 2 - sound only
+none,Apple.wav,none,0,0,Apple_02.jpg,1,1,Potato_01.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES,1612,SAMPLE MODE 2 - sound only
+none,Melon.wav,none,0,0,Melon_01.jpg,2,3,Blueberry_01.jpg,3,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1535,SAMPLE MODE 2 - sound only
+none,Foot.wav,none,0,0,Foot_02.jpg,1,1,Peas_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES,1502,SAMPLE MODE 2 - sound only
+none,dodo.wav,none,0,0,RSlide21.jpg,2,1,ESlide18.jpg,1,3,none,0,0,none,0,0,none,0,0,2,no,YES,885,SAMPLE MODE 2 - sound only
+none,Jelly.wav,none,0,0,Jelly_02.jpg,1,3,Apple_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1557,SAMPLE MODE 2 - sound only
+none,Hose.wav,none,0,0,Hose_01.jpg,1,3,Elikya_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1085,SAMPLE MODE 2 - sound only
+none,Coconut.wav,none,0,0,Coconut_01.jpg,2,2,Yogurt_01.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1877,SAMPLE MODE 2 - sound only
+none,Fire.wav,none,0,0,Fire_02.jpg,3,3,Bug_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1452,SAMPLE MODE 2 - sound only
+none,Teco.wav,none,0,0,Teco_02.jpg,2,1,Maisha_02.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1331,SAMPLE MODE 2 - sound only
+none,Cherries.wav,none,0,0,Cherries_02.jpg,3,2,Grapes_01.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),874,SAMPLE MODE 2 - sound only
+none,Bowl.wav,none,0,0,Bowl_02.jpg,3,2,Cereal_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1021,SAMPLE MODE 2 - sound only
+none,Shoe.wav,none,0,0,Shoe_01.jpg,3,1,Trash_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES,896,SAMPLE MODE 2 - sound only
+none,Nyota.wav,none,0,0,Nyota_01.jpg,1,1,Noodles_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1152,SAMPLE MODE 2 - sound only
+none,Vitamin.wav,none,0,0,Vitamin_01.jpg,1,2,Bunny_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1203,SAMPLE MODE 2 - sound only
+none,Fridge.wav,none,0,0,Fridge_02.jpg,1,3,Spoon_01.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1241,SAMPLE MODE 2 - sound only
+none,Pineapple.wav,none,0,0,Pineapple_02.jpg,2,2,Oil_01.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1044,SAMPLE MODE 2 - sound only
+none,Wipies.wav,none,0,0,Wipies_01.jpg,2,1,Cheese_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES,2168,SAMPLE MODE 2 - sound only
+none,momo.wav,none,0,0,Rshape5.jpg,3,3,ESlide38.jpg,2,2,none,0,0,none,0,0,none,0,0,2,no,NO,934,SAMPLE MODE 2 - sound only
+none,Watermelon.wav,none,0,0,Watermelon_01.jpg,1,3,Bowl_02.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1532,SAMPLE MODE 2 - sound only
+none,Strawberries.wav,none,0,0,Strawberries_01.jpg,3,3,Fire_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES,1241,SAMPLE MODE 2 - sound only
+none,Ball.wav,none,0,0,Ball_01.jpg,2,3,Groom_01.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1310,SAMPLE MODE 2 - sound only
+none,Maisha.wav,none,0,0,Maisha_02.jpg,1,1,Bird_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1542,SAMPLE MODE 2 - sound only
+none,kiki.wav,none,0,0,Eshape.jpg,1,3,RSlide17.jpg,2,1,none,0,0,none,0,0,none,0,0,2,no,YES,1085,SAMPLE MODE 2 - sound only
+none,Fish.wav,none,0,0,Fish_01.jpg,1,1,Peaches_02.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1935,SAMPLE MODE 2 - sound only
+none,Melon.wav,none,0,0,Melon_02.jpg,1,2,Pineapple_01.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1448,SAMPLE MODE 2 - sound only
+none,Squirrel.wav,none,0,0,Squirrel_02.jpg,2,1,Raisin_02.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1015,SAMPLE MODE 2 - sound only
+none,Brush.wav,none,0,0,Brush_01.jpg,2,3,Hose_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1523,SAMPLE MODE 2 - sound only
+none,Ball.wav,none,0,0,Ball_02.jpg,2,3,Matata_01.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),934,SAMPLE MODE 2 - sound only
+none,Celery.wav,none,0,0,Celery_01.jpg,2,1,Lighter_02.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),979,SAMPLE MODE 2 - sound only
+none,Stethoscope.wav,none,0,0,Stethoscope_02.jpg,2,1,Bubbles_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,NO,1651,SAMPLE MODE 2 - sound only
+none,Pillow.wav,none,0,0,Pillow_02.jpg,3,3,Hat_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES,1442,SAMPLE MODE 2 - sound only
+none,Grapes.wav,none,0,0,Grapes_02.jpg,1,1,Snake_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES,849,SAMPLE MODE 2 - sound only
+none,Lighter.wav,none,0,0,Lighter_01.jpg,3,1,Teco_02.jpg,1,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1378,SAMPLE MODE 2 - sound only
+none,Trash.wav,none,0,0,Trash_02.jpg,2,2,Blueberry_02.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),2122,SAMPLE MODE 2 - sound only
+none,Groom.wav,none,0,0,Groom_01.jpg,3,3,Ball_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1419,SAMPLE MODE 2 - sound only
+none,Baby.wav,none,0,0,Baby_01.jpg,2,1,Snake_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1938,SAMPLE MODE 2 - sound only
+none,Teco.wav,none,0,0,Teco_01.jpg,3,1,Cereal_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1693,SAMPLE MODE 2 - sound only
+none,Gorilla.wav,none,0,0,Gorilla_01.jpg,1,2,Carrot_01.jpg,3,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1328,SAMPLE MODE 2 - sound only
+none,zeze.wav,none,0,0,ESlide34.jpg,3,1,RSlide2.jpg,2,2,none,0,0,none,0,0,none,0,0,2,no,YES,900,SAMPLE MODE 2 - sound only
+none,Carrot.wav,none,0,0,Carrot_02.jpg,2,2,Baby_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1122,SAMPLE MODE 2 - sound only
+none,Wipies.wav,none,0,0,Wipies_02.jpg,2,3,Bunny_01.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1503,SAMPLE MODE 2 - sound only
+none,Fridge.wav,none,0,0,Fridge_01.jpg,2,1,Grapes_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1196,SAMPLE MODE 2 - sound only
+none,Blueberry.wav,none,0,0,Blueberry_01.jpg,3,1,Straw_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),868,SAMPLE MODE 2 - sound only
+none,Fish.wav,none,0,0,Fish_01.jpg,3,2,Kanzi_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1227,SAMPLE MODE 2 - sound only
+none,fefe.wav,none,0,0,Eshape3.jpg,3,2,RSlide37.jpg,2,3,none,0,0,none,0,0,none,0,0,2,no,YES,1150,SAMPLE MODE 2 - sound only
+none,Hat.wav,none,0,0,Hat_02.jpg,2,3,Nyota_02.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1637,SAMPLE MODE 2 - sound only
+none,Hose.wav,none,0,0,Hose_01.jpg,1,3,Swelling_02.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1513,SAMPLE MODE 2 - sound only
+none,Vitamin.wav,none,0,0,Vitamin_01.jpg,1,2,Bunny_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1199,SAMPLE MODE 2 - sound only
+none,Tv.wav,none,0,0,Tv_02.jpg,1,1,Mouth_01.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1119,SAMPLE MODE 2 - sound only
+none,Elikya.wav,none,0,0,Elikya_02.jpg,1,1,Baby_02.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1598,SAMPLE MODE 2 - sound only
+none,Turtle.wav,none,0,0,Turtle_01.jpg,2,3,Vitamin_02.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1369,SAMPLE MODE 2 - sound only
+none,Grapes.wav,none,0,0,Grapes_01.jpg,1,1,Trash_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1058,SAMPLE MODE 2 - sound only
+none,Lettuce.wav,none,0,0,Lettuce_01.jpg,3,1,Pear_02.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1638,SAMPLE MODE 2 - sound only
+none,Cereal.wav,none,0,0,Cereal_01.jpg,3,2,String_01.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),973,SAMPLE MODE 2 - sound only
+none,Milk.wav,none,0,0,Milk_02.jpg,3,1,Lighter_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1853,SAMPLE MODE 2 - sound only
+none,Apricot.wav,none,0,0,Apricot_01.jpg,3,2,Stick_01.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,YES,1150,SAMPLE MODE 2 - sound only
+none,Green Bean.wav,none,0,0,Green Bean_02.jpg,3,3,Knife_01.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1013,SAMPLE MODE 2 - sound only
+none,dudu.wav,none,0,0,RSlide9.jpg,1,1,ESlide22.jpg,2,2,none,0,0,none,0,0,none,0,0,2,no,NO,775,SAMPLE MODE 2 - sound only
+none,Backpack.wav,none,0,0,Backpack_02.jpg,3,2,Grapes_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES,1175,SAMPLE MODE 2 - sound only
+none,Elikya.wav,none,0,0,Elikya_01.jpg,3,3,Egg_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1202,SAMPLE MODE 2 - sound only
+none,Trash.wav,none,0,0,Trash_01.jpg,3,3,Knife_02.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1192,SAMPLE MODE 2 - sound only
+none,Rock.wav,none,0,0,Rock_01.jpg,3,3,Turtle_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,NO,1643,SAMPLE MODE 2 - sound only
+none,Car.wav,none,0,0,Car_01.jpg,1,1,Noodles_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1748,SAMPLE MODE 2 - sound only
+none,Shoe.wav,none,0,0,Shoe_01.jpg,3,3,Maisha_01.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1191,SAMPLE MODE 2 - sound only
+none,keke.wav,none,0,0,ESlide6.jpg,1,2,RSlide19.jpg,2,3,none,0,0,none,0,0,none,0,0,2,no,YES,957,SAMPLE MODE 2 - sound only
+none,Shoe.wav,none,0,0,Shoe_02.jpg,3,3,Pineapple_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1608,SAMPLE MODE 2 - sound only
+none,Orangutan.wav,none,0,0,Orangutan_01.jpg,1,2,Blueberry_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES,1262,SAMPLE MODE 2 - sound only
+none,Bubbles.wav,none,0,0,Bubbles_02.jpg,3,1,Straw_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1487,SAMPLE MODE 2 - sound only
+none,Orange.wav,none,0,0,Orange_01.jpg,2,3,Apricot_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1270,SAMPLE MODE 2 - sound only
+none,Mouth.wav,none,0,0,Mouth_02.jpg,1,3,Jelly_02.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,YES,1486,SAMPLE MODE 2 - sound only
+none,Snake.wav,none,0,0,Snake_01.jpg,3,3,Bowl_02.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1373,SAMPLE MODE 2 - sound only
+none,nunu.wav,none,0,0,RSlide27.jpg,3,3,ESlide8.jpg,2,2,none,0,0,none,0,0,none,0,0,2,no,YES,912,SAMPLE MODE 2 - sound only
+none,Potato.wav,none,0,0,Potato_01.jpg,1,2,Shirt_02.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),996,SAMPLE MODE 2 - sound only
+none,Stethoscope.wav,none,0,0,Stethoscope_01.jpg,1,1,Tomato_01.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1243,SAMPLE MODE 2 - sound only
+none,Baby.wav,none,0,0,Baby_02.jpg,2,3,Banana_02.jpg,3,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1173,SAMPLE MODE 2 - sound only
+none,Kanzi.wav,none,0,0,Kanzi_02.jpg,1,3,Toothbrush_01.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1742,SAMPLE MODE 2 - sound only
+none,Lemon.wav,none,0,0,Lemon_02.jpg,3,2,Milk_02.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1433,SAMPLE MODE 2 - sound only
+none,Car.wav,none,0,0,Car_02.jpg,3,3,String_02.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1021,SAMPLE MODE 2 - sound only
+none,Toothbrush.wav,none,0,0,Toothbrush_02.jpg,1,1,Hose_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,NO,893,SAMPLE MODE 2 - sound only
+none,Fish.wav,none,0,0,Fish_02.jpg,2,3,Strawberries_02.jpg,1,2,none,0,0,none,0,0,none,0,0,2,yes,YES,1190,SAMPLE MODE 2 - sound only
+none,Ball.wav,none,0,0,Ball_01.jpg,3,2,Groom_01.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),867,SAMPLE MODE 2 - sound only
+none,Tomato.wav,none,0,0,Tomato_01.jpg,2,2,Shoe_01.jpg,3,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1369,SAMPLE MODE 2 - sound only
+none,Kanzi.wav,none,0,0,Kanzi_01.jpg,1,3,Shirt_01.jpg,2,1,none,0,0,none,0,0,none,0,0,2,yes,NO,1248,SAMPLE MODE 2 - sound only
+none,Watermelon.wav,none,0,0,Watermelon_02.jpg,2,1,Potato_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,NO,1416,SAMPLE MODE 2 - sound only
+none,Pinecone.wav,none,0,0,Pinecone_01.jpg,1,3,Groom_02.jpg,2,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),989,SAMPLE MODE 2 - sound only
+none,fifi.wav,none,0,0,ESlide46.jpg,3,2,RSlide26.jpg,1,3,none,0,0,none,0,0,none,0,0,2,no,YES,888,SAMPLE MODE 2 - sound only
+none,Stick.wav,none,0,0,Stick_02.jpg,1,1,Mushroom_01.jpg,2,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1663,SAMPLE MODE 2 - sound only
+none,Mushroom.wav,none,0,0,Mushroom_02.jpg,2,1,Apricot_01.jpg,3,2,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1864,SAMPLE MODE 2 - sound only
+none,Toothbrush.wav,none,0,0,Toothbrush_01.jpg,2,2,Swelling_01.jpg,1,1,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1049,SAMPLE MODE 2 - sound only
+none,Blanket.wav,none,0,0,Blanket_01.jpg,2,1,Hat_01.jpg,3,3,none,0,0,none,0,0,none,0,0,2,yes,YES (R),1988,SAMPLE MODE 2 - sound only
+completed pass #1

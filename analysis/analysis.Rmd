@@ -31,35 +31,38 @@ hdi_lower<- function(s){
 
 Each test session produced a separate `.csv` file. Here we read in all files and combine them in one datafile. 
 ```{r}
-# read_plus <- function(flnm) {
-#     read_csv(flnm, skip = 3) %>% 
-#         mutate(filename = flnm, 
-#                trial = 1:length(SampleSound),
-#                RT = as.character(RT))
-# }
-# 
-# 
-# raw_data <- list.files(path = "../Data/Testing/",
-#                        pattern = "*.csv",
-#                        full.names = T) %>% 
-#   map_df(~read_plus(.))
-# 
-# data <- raw_data %>%
-#   filter(trial != 1)%>%
-#   mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0), # re-code response variable for analysis. "Yes (R)" refers to trials with a reward
-#          shape_combination  = paste(Correct,Foil1, sep = "_"), # generate variable for specific shape combination
-#          session = as.numeric(factor(filename)), # generate numeric session number,
-#          cont_trial = trial + (session -1) * 100, #generate a continuous trial number across sessions
-#          condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"), # generate variable tracking whether it's a test or a filler trial. Test trials had pictures that were named E/RSlide or E/Rshape
-#          RT = as.numeric(RT),
-#          test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"),
-#          test_shape = ifelse(condition == "test", test_shape, "NA"))%>%
-#   na.omit(correct)%>%
-#   select(session, trial,cont_trial, condition, SampleSound, test_shape, shape_combination,correct, RT)
-# 
-# write_csv(data, "../Data/data.csv")
+read_plus <- function(flnm) {
+    read_csv(flnm, skip = 3) %>%
+        mutate(filename = flnm,
+               trial = 1:length(SampleSound),
+               RT = as.character(RT))
+}
+
+
+raw_data <- list.files(path = "../Data/raw_data/Testing/",
+                       pattern = "*.csv",
+                       full.names = T) %>%
+  map_df(~read_plus(.))
+
+data <- raw_data %>%
+  filter(trial != 1)%>%
+  mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0), # re-code response variable for analysis. "Yes (R)" refers to trials with a reward
+         shape_combination  = paste(Correct,Foil1, sep = "_"), # generate variable for specific shape combination
+         session = as.numeric(factor(filename)), # generate numeric session number,
+         cont_trial = trial + (session -1) * 100, #generate a continuous trial number across sessions
+         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"), # generate variable tracking whether it's a test or a filler trial. Test trials had pictures that were named E/RSlide or E/Rshape
+         RT = as.numeric(RT),
+         test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"),
+         test_shape = ifelse(condition == "test", test_shape, "NA"))%>%
+  na.omit(correct)
+  select(session, trial,cont_trial, condition, SampleSound, test_shape, shape_combination,correct, RT)
+
+write_csv(data, "../Data/data.csv")
 
 data <- read_csv("../Data/data.csv")
+
+
+str(data)
 ```
 # Descriptives
 
@@ -199,9 +202,9 @@ bm_filler <- brm(correct ~ 1 + (z_trial | SampleSound ),# + (z_trial | shape_com
           iter = 5000,
           control = list(adapt_delta = 0.99, max_treedepth = 20))
 
-#saveRDS(bm_filler, "saves/filler_model.rds")
+#saveRDS(bm_filler, "saves/model_filler.rds")
 
-bm_filler <- readRDS("saves/filler_model.rds")
+bm_filler <- readRDS("saves/model_filler.rds")
 
 bm_filler
 
@@ -209,7 +212,7 @@ bm_filler
 
 
 ```{r}
-filler_samples <- bm_filler%>%
+bm_filler%>%
   spread_draws(b_Intercept)%>%
   ggplot(aes(x = b_Intercept, fill = stat(x < 1.69 | x > 2.31))) +
   stat_halfeye(alpha = .7)+
@@ -277,8 +280,7 @@ In test trials, Kanzi either had to match a round sound to a round shape or a ed
 ```{r}
 plot1 <- data%>%
   filter(condition == "test")%>%
-  mutate(shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"))%>%
-  group_by(session, shape)%>%
+  group_by(session, test_shape)%>%
   summarise(mean = mean(correct))
 
 shape_est <- bm_shape%>%
@@ -286,8 +288,8 @@ shape_est <- bm_shape%>%
   mutate(edgy = b_Intercept,
          round = b_Intercept + b_test_shaperound)%>%
   select(round, edgy)%>%
-  gather(shape, value)%>%
-  group_by(shape)%>%
+  gather(test_shape, value)%>%
+  group_by(test_shape)%>%
   summarise(mean = mean(value),
             uci = hdi_upper(value),
             lci = hdi_lower(value))%>%
@@ -296,8 +298,8 @@ shape_est <- bm_shape%>%
 
 shape_plot <- ggplot()+
   geom_hline(yintercept = 0.5, lty = 2)+
-  geom_jitter(data = plot1, aes(x= shape, y = mean, col = shape), alpha = 0.2, width = 0.1, height = 0)+
-  geom_pointrange(data = shape_est, aes(x = shape, y = mean, ymax = uci, ymin = lci, col = shape), pch = 5)+
+  geom_jitter(data = plot1, aes(x= test_shape, y = mean, col = test_shape), alpha = 0.2, width = 0.1, height = 0)+
+  geom_pointrange(data = shape_est, aes(x = test_shape, y = mean, ymax = uci, ymin = lci, col = test_shape), pch = 5)+
   #geom_line(aes(y= mean, col = shape))+
   ylim(0,1)+
   ylab("Prop. correct")+
@@ -307,7 +309,7 @@ shape_plot <- ggplot()+
   theme_minimal()
 ```
 
-## Combined plot
+## Combined plot (Figure X in paper)
 
 ```{r}
 ggarrange(
@@ -334,7 +336,7 @@ ggarrange(
   widths = c(1,1.3)
 )
 
-ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
+#ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
 ```
 
 
