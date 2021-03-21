@@ -6,7 +6,7 @@
 
 ------------------------------------------------------------------------
 
-Please see the [paper](...) for additional details.
+Please see the [[add link to paper]](...) for additional details.
 
 Pre-registration for the methods and the analyses can be found [here](https://osf.io/749pg).
 
