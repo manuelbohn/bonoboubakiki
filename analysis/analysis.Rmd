@@ -29,7 +29,7 @@ hdi_lower<- function(s){
 
 # Load data
 
-Each test session produced a separate `.csv` file. Here we read in all files and combine them in one datafile. 
+Each test session produced a separate `.csv` file. Here we read in all files and combine them in one data file. 
 ```{r}
 read_plus <- function(flnm) {
     read_csv(flnm, skip = 3) %>%
@@ -50,7 +50,7 @@ data <- raw_data %>%
          shape_combination  = paste(Correct,Foil1, sep = "_"), # generate variable for specific shape combination
          session = as.numeric(factor(filename)), # generate numeric session number,
          cont_trial = trial + (session -1) * 100, #generate a continuous trial number across sessions
-         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "filler"), # generate variable tracking whether it's a test or a filler trial. Test trials had pictures that were named E/RSlide or E/Rshape
+         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "regular"), # generate variable tracking whether it's a test or a regular trial. Test trials had pictures that were named E/RSlide or E/Rshape
          RT = as.numeric(RT),
          test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"),
          test_shape = ifelse(condition == "test", test_shape, "NA"))%>%
@@ -68,7 +68,7 @@ str(data)
 
 ## Number of Trials
 
-Number of trials per condition. There were 30 sessions in total, each with 10 test trials. There are 2 filler trials missing, because they timed out (> 6000ms to react). 
+Number of trials per condition. There were 30 sessions in total, each with 10 test trials. There are 2 regular trials missing, because of a software error in session 1 and 2 (see main paper for detail). 
 
 ```{r}
 data %>%
@@ -78,7 +78,7 @@ data %>%
 
 ## Reaction times
 
-Visualize reaction time by correct choice and trial time to check if responses were slower / faster in test trials compared to filler trials. Responses seem to be slightly faster in test trials, but still fall very well inside the distribution of filler trials. 
+Visualize reaction time by correct choice and trial time to check if responses were slower / faster in test trials compared to regular trials. Responses seem to be slightly faster in test trials, but still fall very well inside the distribution of regular trials. 
 
 ```{r}
 rt_data <- data%>%
@@ -109,8 +109,8 @@ test_data <- data %>%
   filter(condition == "test")%>%
   mutate(z_trial = scale(cont_trial))
 
-filler_data <- data %>%
-  filter(condition == "filler")%>%
+regular_data <- data %>%
+  filter(condition == "regular")%>%
   mutate(z_trial = scale(cont_trial))
 
 ```
@@ -187,32 +187,32 @@ bm_shape%>%
   theme_minimal()
 ```
 
-### Filler trials
+### Regular trials
 
 #### Comparison to chance
 
 ```{r}
 # model takes f long time to run
 
-bm_filler <- brm(correct ~ 1 + (z_trial | SampleSound ),# + (z_trial | shape_combination),
-          data = filler_data,
+bm_regular <- brm(correct ~ 1 + (z_trial | SampleSound ),# + (z_trial | shape_combination),
+          data = regular_data,
           family = bernoulli(),
           cores = 4,
           chains = 4,
           iter = 5000,
           control = list(adapt_delta = 0.99, max_treedepth = 20))
 
-#saveRDS(bm_filler, "saves/model_filler.rds")
+#saveRDS(bm_regular, "saves/model_regular.rds")
 
-bm_filler <- readRDS("saves/model_filler.rds")
+bm_regular <- readRDS("saves/model_regular.rds")
 
-bm_filler
+bm_regular
 
 ```
 
 
 ```{r}
-bm_filler%>%
+bm_regular%>%
   spread_draws(b_Intercept)%>%
   ggplot(aes(x = b_Intercept, fill = stat(x < 1.69 | x > 2.31))) +
   stat_halfeye(alpha = .7)+
@@ -226,7 +226,7 @@ bm_filler%>%
 
 # Visualizations
 
-## Correct choice in filler and test trials
+## Correct choice in regular and test trials
 
 Visualize the results overall (A) and by session (B). Error bars show 95% confidence intervals. Light dots in A show session means.
 
@@ -239,7 +239,7 @@ plot_session <- data%>%
 # model estimates
 model_est <- bind_rows(
   fixef(bm_test)%>%as_tibble()%>%mutate(condition = "test"),
-  fixef(bm_filler)%>%as_tibble()%>%mutate(condition = "filler"),
+  fixef(bm_regular)%>%as_tibble()%>%mutate(condition = "regular"),
 )%>%
   mutate(mean = plogis(Estimate),
          uci = plogis(Q2.5),
@@ -336,7 +336,7 @@ ggarrange(
   widths = c(1,1.3)
 )
 
-#ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
+ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
 ```
 
 
