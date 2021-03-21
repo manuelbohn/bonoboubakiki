@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
-    <ThreadPoolAction thread-pool="../../sound-thread-pool" thread-pool-only-one="true">
-        <PlaySound url-type="path" url-parent="lex-url" url-path="%res:lex-name%.wav" sound-sync="true"/>
-    </ThreadPoolAction>
-</root>

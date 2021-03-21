@@ -1,5 +1,5 @@
 ---
-title: "Power Analysis"
+title: "Analysis"
 output: html_document
 ---
 
@@ -30,10 +30,11 @@ hdi_lower<- function(s){
 # Load data
 
 ```{r}
-data <- read_csv("../Data/data.csv")
+data <- read_csv("../data/data.csv")
 
 str(data)
 ```
+
 # Descriptives
 
 ## Number of Trials
@@ -48,7 +49,7 @@ data %>%
 
 ## Reaction times
 
-Visualize reaction time by correct choice and trial time to check if responses were slower / faster in test trials compared to regular trials. Responses seem to be slightly faster in test trials, but still fall very well inside the distribution of regular trials. 
+Visualize reaction time by correct choice and trial type to check if responses were slower / faster in test trials compared to regular trials. Responses seemed to be faster in test trials, but the two distributions still overlap considerably. 
 
 ```{r}
 rt_data <- data%>%
@@ -89,13 +90,13 @@ regular_data <- data %>%
 
 #### Comparison to chance
 
-We use a generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we infer that if the 95% credible interval around the intercept estimate does not include 0, performance is reliably above chance.
+We use a Bayesian generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we infer that if the 95% credible interval around the intercept estimate does not include 0, performance is reliably above chance.
 
 All models use default priors as implemented in the `brms` package.
 
 ```{r}
 # model takes a minute or two to initialize and run.
-# load rds file if you don't want to wait or if you want to reproduce the numbers in the exact manuscript
+# load rds file if you don't want to wait or if you want to reproduce the exact numbers in the manuscript
 
 bm_test <- brm(correct ~ 1 + (z_trial | SampleSound ), # + (z_trial | shape_combination),
           data = test_data,
@@ -115,7 +116,7 @@ bm_test
 ```{r}
 bm_test%>%
   spread_draws(b_Intercept)%>%
-  ggplot(aes(x = b_Intercept, fill = stat(x < -0.15 | x > 0.55))) +
+  ggplot(aes(x = b_Intercept, fill = stat(x < -0.08 | x > 0.41))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
   xlab("Intercept")+
@@ -148,7 +149,7 @@ bm_shape
 ```{r}
 bm_shape%>%
   spread_draws(b_test_shaperound)%>%
-  ggplot(aes(x = b_test_shaperound, fill = stat(x < -0.48 | x > 1.00))) +
+  ggplot(aes(x = b_test_shaperound, fill = stat(x < -0.34 | x > 0.67))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
   xlab("Estimate: test shape")+
@@ -184,7 +185,7 @@ bm_regular
 ```{r}
 bm_regular%>%
   spread_draws(b_Intercept)%>%
-  ggplot(aes(x = b_Intercept, fill = stat(x < 1.69 | x > 2.31))) +
+  ggplot(aes(x = b_Intercept, fill = stat(x < 1.71 | x > 2.30))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
   xlab("Intercept")+
@@ -198,7 +199,7 @@ bm_regular%>%
 
 ## Correct choice in regular and test trials
 
-Visualize the results overall (A) and by session (B). Error bars show 95% confidence intervals. Light dots in A show session means.
+Visualize the results overall (A) and by session (B). Error bars show 95% credible intervals. Light dots in A show session means.
 
 ```{r}
 # data from individual sessions
@@ -245,7 +246,7 @@ sess_plot <- ggplot(plot_session, aes(x = session, col = condition))+
 ```
 ## Correct choice in edgy vs. round trials
 
-In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. The plot below shows correct responses for round vs. edgy test trials. Error bars show 95% confidence intervals, light dots show session means. 
+In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. The plot below shows correct responses for round vs. edgy test trials. Error bars show 95% credible intervals, light dots show session means. 
 
 ```{r}
 plot1 <- data%>%
@@ -279,7 +280,7 @@ shape_plot <- ggplot()+
   theme_minimal()
 ```
 
-## Combined plot (Figure X in paper)
+## Combined plot (Figure 2 in paper)
 
 ```{r}
 ggarrange(
