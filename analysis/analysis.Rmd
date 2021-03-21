@@ -29,38 +29,8 @@ hdi_lower<- function(s){
 
 # Load data
 
-Each test session produced a separate `.csv` file. Here we read in all files and combine them in one data file. 
 ```{r}
-read_plus <- function(flnm) {
-    read_csv(flnm, skip = 3) %>%
-        mutate(filename = flnm,
-               trial = 1:length(SampleSound),
-               RT = as.character(RT))
-}
-
-
-raw_data <- list.files(path = "../Data/raw_data/Testing/",
-                       pattern = "*.csv",
-                       full.names = T) %>%
-  map_df(~read_plus(.))
-
-data <- raw_data %>%
-  filter(trial != 1)%>%
-  mutate(correct = ifelse(Correct_1 == "YES" | Correct_1 == "YES (R)", 1, 0), # re-code response variable for analysis. "Yes (R)" refers to trials with a reward
-         shape_combination  = paste(Correct,Foil1, sep = "_"), # generate variable for specific shape combination
-         session = as.numeric(factor(filename)), # generate numeric session number,
-         cont_trial = trial + (session -1) * 100, #generate a continuous trial number across sessions
-         condition = ifelse(grepl("Slide", Correct) | grepl("shape", Correct),"test", "regular"), # generate variable tracking whether it's a test or a regular trial. Test trials had pictures that were named E/RSlide or E/Rshape
-         RT = as.numeric(RT),
-         test_shape = ifelse(grepl("ESlide", Correct) | grepl("Eshape", Correct),"edgy", "round"),
-         test_shape = ifelse(condition == "test", test_shape, "NA"))%>%
-  na.omit(correct)
-  select(session, trial,cont_trial, condition, SampleSound, test_shape, shape_combination,correct, RT)
-
-write_csv(data, "../Data/data.csv")
-
 data <- read_csv("../Data/data.csv")
-
 
 str(data)
 ```
