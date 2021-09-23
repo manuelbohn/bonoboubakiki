@@ -27,12 +27,9 @@ hdi_lower<- function(s){
 }
 ```
 
-# Load data
 
 ```{r}
 data <- read_csv("../data/data.csv")
-
-str(data)
 ```
 
 # Descriptives
@@ -70,6 +67,20 @@ rt_plot <- ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = 
         legend.direction = "vertical",
         legend.box = "horizontal")
 ```
+Change in reaction time over time. Reaction times are relatively stable across time and changed in simialr ways in regular and test trials.
+
+```{r, fig.height = 3, fig.cap = "Reactions time across trials (continous across sessions) for regular and test trials. light dots represent individual trials. Regression line gives a smoothed conditional mean.", out.width="100%"}
+rt_data%>%
+  group_by(condition)%>%
+  mutate(trial_cont = 1:length(trial))%>%
+  ggplot(aes(x = trial_cont, y = RT, col = condition))+
+  geom_point(alpha = .25)+
+  geom_smooth(col = "firebrick", method = "loess")+
+  facet_grid(~condition, scales = "free_x")+
+  labs(x = "Trial (continous across sessions)", y = "Reaction time")+
+  scale_color_colorblind()+
+  theme_minimal()
+```
 
 # Results
 
@@ -90,69 +101,190 @@ regular_data <- data %>%
 
 #### Comparison to chance
 
-We use a Bayesian generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we infer that if the 95% credible interval around the intercept estimate does not include 0, performance is reliably above chance.
+We used a Bayesian generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we inferred that if the 95% credible interval around the intercept estimate did not include 0, performance is reliably above chance.
 
 All models use default priors as implemented in the `brms` package.
 
-```{r}
+```{r, cache = T}
 # model takes a minute or two to initialize and run.
 # load rds file if you don't want to wait or if you want to reproduce the exact numbers in the manuscript
 
-bm_test <- brm(correct ~ 1 + (z_trial | SampleSound ), # + (z_trial | shape_combination),
-          data = test_data,
-          family = bernoulli(),
-          cores = 4,
-          chains = 4,
-          iter = 5000,
-          control = list(adapt_delta = 0.95))
+# bm_test <- brm(correct ~ 1 + (z_trial | SampleSound ), # + (z_trial | shape_combination),
+#           data = test_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
 
 #saveRDS(bm_test, "saves/model_test.rds")
 
 bm_test <-readRDS("saves/model_test.rds")
-
-bm_test
 ```
 
-```{r}
+```{r, fig.cap = "Estimate for intercept term (with 95 \\% credible interval) in the model for test trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
 bm_test%>%
   spread_draws(b_Intercept)%>%
   ggplot(aes(x = b_Intercept, fill = stat(x < -0.08 | x > 0.41))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
-  xlab("Intercept")+
+  labs("Intercept", y = "Density")+
   scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
   guides(fill = F)+
   theme_minimal()
 ```
 
+##### Prior sensitivity analysis
+
+Here we explore the effect of different prior distributions for the intercept term on the results. The default prior is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`.
+
+```{r}
+# weak_prior <- prior(normal(0, 10), class="Intercept")
+# medium_prior <- prior(normal(0, 5), class="Intercept")
+# strong_prior <- prior(normal(0, 1), coef="Intercept")
+# 
+# bm_test_weak_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+#           data = test_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           prior = weak_prior,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
+# 
+# saveRDS(bm_test_weak_prior, "saves/model_test_weak_prior.rds")
+# 
+# bm_test_weak_prior <-readRDS("saves/model_test_weak_prior.rds")
+# 
+# bm_test_medium_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+#           data = test_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           prior = medium_prior,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
+# 
+# saveRDS(bm_test_medium_prior, "saves/model_test_medium_prior.rds")
+# 
+# bm_test_medium_prior <-readRDS("saves/model_test_medium_prior.rds")
+# 
+# bm_test_strong_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+#           data = test_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           prior = medium_prior,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
+# 
+# saveRDS(bm_test_strong_prior, "saves/model_test_strong_prior.rds")
+# 
+# bm_test_strong_prior <-readRDS("saves/model_test_strong_prior.rds")
+# 
+# prior_plot <- bind_rows(
+#   fixef(bm_test)%>%as_tibble()%>%mutate(Prior = "default"),
+#   fixef(bm_test_weak_prior)%>%as_tibble()%>%mutate(Prior = "weak"),
+#   fixef(bm_test_medium_prior)%>%as_tibble()%>%mutate(Prior = "medium"),
+#   fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "strong")
+# )
+# 
+# saveRDS(prior_plot, "saves/prior_sensitivity.rds")
+
+prior_plot <- readRDS("saves/prior_sensitivity.rds")
+```
+
+```{r, fig.cap = "Estimate for intercept term (with 95 \\% confidence interval) in the model for test trials with different prior distributions. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
+
+prior_plot%>%
+  mutate(Prior = factor(Prior, levels = c("default", "weak","medium","strong")))%>%
+  ggplot(aes(x = Prior, y = Estimate))+
+  geom_hline(yintercept = 0, lty = 2, alpha = .75)+
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5))+
+  labs(y = "Model intercept")+
+  ylim(-0.5, 0.5)+
+  theme_minimal()
+```
+
+##### Subset analysis
+
+In McCormick et al. (2015), some pseudo words were rated as more sound symbolic than others. These words were: `keke`,`kiki`,`pepe`,`pipi`,`lulu`,`lolo`,`mumu`,`momo`,`nono`,`nunu`. Here we re-run the model on a subset of the test trials that included only these pseudo words. 
+
+This reduces the number of trials to `r length(test_data_sel$SampleSound)`.
+
+```{r}
+# sel_words = c("keke","kiki","pepe","pipi","lulu","lolo","mumu","momo","nono","nunu")
+# 
+# test_data_sel <- test_data%>%
+#   mutate(SampleSound = substr(SampleSound, 1, nchar(SampleSound)-4))%>%
+#   filter(SampleSound %in% sel_words)
+# 
+# bm_test_sel <- brm(correct ~ 1 + (z_trial | SampleSound ),
+#           data = test_data_sel,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
+# 
+# saveRDS(bm_test_sel, "saves/model_test_sel.rds")
+# 
+# bm_test_sel <-readRDS("saves/model_test_sel.rds")
+# 
+# sel_plot <- bind_rows(
+#   fixef(bm_test)%>%as_tibble()%>%mutate(Data = "all trials"),
+#   fixef(bm_test_sel)%>%as_tibble()%>%mutate(Data = "subset")
+# )
+# 
+# saveRDS(sel_plot, "saves/sel_plot.rds")
+
+sel_plot <- readRDS("saves/sel_plot.rds")
+
+```
+
+```{r, fig.cap = "Estimate for intercept term (with 95 \\% confidence interval) in the model for test trials based on all trials (left) and a subset of trials with words that had high sound symbolic ratings in McCormick et al. (2015). Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
+
+sel_plot%>%
+  ggplot(aes(x = Data, y = Estimate))+
+  geom_hline(yintercept = 0, lty = 2, alpha = .75)+
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5))+
+  labs(y = "Model intercept")+
+  ylim(-0.7, 0.7)+
+  theme_minimal()
+```
 
 #### Shape preference
 
-```{r}
+In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. 
+
+```{r, cache = T}
 # load .rds file if you don't want to run the model
 
-bm_shape <- brm(correct ~ test_shape + (z_trial | SampleSound ), #+ (z_trial | shape_combination),
-          data = test_data,
-          family = bernoulli(),
-          cores = 4,
-          chains = 4,
-          iter = 5000,
-          control = list(adapt_delta = 0.95))
+# bm_shape <- brm(correct ~ test_shape + (z_trial | SampleSound ), #+ (z_trial | shape_combination),
+#           data = test_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.95))
 
 #saveRDS(bm_shape, "saves/model_shape.rds")
 
 bm_shape <-readRDS("saves/model_shape.rds")
 
-bm_shape
 ```
 
-```{r}
+```{r, fig.cap = "Posterior estimates (with 95 \\% credible interval) for test trials with round or edgy shapes. Dashed line shows chance level (in link space).", out.width="100%", fig.height=4}
 bm_shape%>%
-  spread_draws(b_test_shaperound)%>%
-  ggplot(aes(x = b_test_shaperound, fill = stat(x < -0.34 | x > 0.67))) +
+  spread_draws(b_Intercept,b_test_shaperound)%>%
+  mutate(edgy = b_Intercept,
+         round = b_Intercept + b_test_shaperound)%>%
+  select(round, edgy)%>%
+  gather(test_shape, value)%>%
+  ggplot(aes(x = value, y = test_shape)) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
-  xlab("Estimate: test shape")+
+  labs(x = "Model estimate", y = "Shape")+
   scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
   guides(fill = F)+
   theme_minimal()
@@ -162,23 +294,20 @@ bm_shape%>%
 
 #### Comparison to chance
 
-```{r}
-# model takes f long time to run
+```{r, cache = T}
+# model takes long time to run
 
-bm_regular <- brm(correct ~ 1 + (z_trial | SampleSound ),# + (z_trial | shape_combination),
-          data = regular_data,
-          family = bernoulli(),
-          cores = 4,
-          chains = 4,
-          iter = 5000,
-          control = list(adapt_delta = 0.99, max_treedepth = 20))
+# bm_regular <- brm(correct ~ 1 + (z_trial | SampleSound ),# + (z_trial | shape_combination),
+#           data = regular_data,
+#           family = bernoulli(),
+#           cores = 4,
+#           chains = 4,
+#           iter = 5000,
+#           control = list(adapt_delta = 0.99, max_treedepth = 20))
 
 #saveRDS(bm_regular, "saves/model_regular.rds")
 
 bm_regular <- readRDS("saves/model_regular.rds")
-
-bm_regular
-
 ```
 
 
@@ -195,13 +324,9 @@ bm_regular%>%
 ```
 
 
-# Visualizations
+# Visualizations for manuscript
 
-## Correct choice in regular and test trials
-
-Visualize the results overall (A) and by session (B). Error bars show 95% credible intervals. Light dots in A show session means.
-
-```{r}
+```{r, cache = T}
 # data from individual sessions
 plot_session <- data%>%
   group_by(session,condition)%>%
@@ -244,11 +369,8 @@ sess_plot <- ggplot(plot_session, aes(x = session, col = condition))+
 
 
 ```
-## Correct choice in edgy vs. round trials
 
-In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. The plot below shows correct responses for round vs. edgy test trials. Error bars show 95% credible intervals, light dots show session means. 
-
-```{r}
+```{r, cache=T}
 plot1 <- data%>%
   filter(condition == "test")%>%
   group_by(session, test_shape)%>%
@@ -280,9 +402,8 @@ shape_plot <- ggplot()+
   theme_minimal()
 ```
 
-## Combined plot (Figure 2 in paper)
+```{r, fig.cap="(A) Proportion of correct choices in regular and test trials. (B) Distribution of reaction times in regular and test trials for correct and incorrect choices. (C) Proportion of correct choices in each session for regular and test trials. (D) Proportion of correct choices in test trials with either edgy or round target shapes. In A and D: Diamonds and error bars represent the mean and 95\\% CrI based on the models’ posterior distribution. Transparent dots show horizontally jittered session means of the data.", out.width="100%", fig.height=6}
 
-```{r}
 ggarrange(
   
   res_plot,
@@ -307,7 +428,7 @@ ggarrange(
   widths = c(1,1.3)
 )
 
-ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
+#ggsave("figures/results.png", height = 3, width = 7, scale = 1.4)
 ```
 
 
