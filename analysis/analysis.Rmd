@@ -50,6 +50,10 @@ hdi_lower<- function(s){
 data <- read_csv("../data/data.csv")
 ```
 
+# Power analysis
+
+We conducted a power analysis to specify the number of test trials in the experiment. The details of this analysis can be found in the file `/analysis/power_analysis.Rmd`. The results of this power analysis suggested that when assuming a true effect of 65% correct responses with 300 test trials our model would support the conclusion that performance was above chance in 88/100 cases.  
+
 # Descriptives
 
 ## Number of Trials
