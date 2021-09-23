@@ -1,10 +1,27 @@
 ---
-title: "Analysis"
-output: html_document
+title: "Bo-NO-bouba-kiki: Picture-word mapping but not sound symbolism in a language trained bonobo"
+subtitle: "Supplementary material"
+author: "Konstantina Margiotoudi, Manuel Bohn, Natalie Schwob, Jared Taglialatela, Friedemann Pulvermüller, Amanda Epping, Ken Schweller, Matthias Allritz"
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_float: true
+    fig_caption: yes
+    #code_folding: hide
+    number_sections: false
+  bookdown::pdf_document2:
+    toc: yes 
+    number_sections: false    
+#bibliography: library.bib
+#csl: pnas.csl
+#header-includes:
+#  \usepackage{caption}
+#  \renewcommand{\figurename}{Supplementary Figure}
+#  \renewcommand{\tablename}{Supplementary Table}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = F, warning = F, message = F, size="small")
 
 library(tidyverse)
 library(brms)
@@ -15,6 +32,7 @@ library(tidyboot)
 library(ggpubr)
 library(tidybayes)
 library(coda)
+library(knitr)
 
 hdi_upper<- function(s){
   m <- HPDinterval(mcmc(s))
@@ -28,7 +46,7 @@ hdi_lower<- function(s){
 ```
 
 
-```{r}
+```{r, include=F}
 data <- read_csv("../data/data.csv")
 ```
 
@@ -39,16 +57,19 @@ data <- read_csv("../data/data.csv")
 Number of trials per condition. There were 30 sessions in total, each with 10 test trials. There are 2 regular trials missing, because of a software error in session 1 and 2 (see main paper for detail). 
 
 ```{r}
-data %>%
+t1 <- data %>%
   group_by(condition)%>%
-  summarise(n())
+  summarise(n = n())%>%
+  kable()
+
+knitr::kable(t1, caption = "Number of trials per condition.", digits = 2, align = "l")
 ```
 
 ## Reaction times
 
 Visualize reaction time by correct choice and trial type to check if responses were slower / faster in test trials compared to regular trials. Responses seemed to be faster in test trials, but the two distributions still overlap considerably. 
 
-```{r}
+```{r, fig.height = 3, fig.cap = "Reactions times for regular and test trials split by correct and incorrect responses.", out.width="100%"}
 rt_data <- data%>%
   mutate(correct = ifelse(correct == 1, "correct", "incorrect"))
 
@@ -67,7 +88,8 @@ rt_plot <- ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = 
         legend.direction = "vertical",
         legend.box = "horizontal")
 ```
-Change in reaction time over time. Reaction times are relatively stable across time and changed in simialr ways in regular and test trials.
+
+Change in reaction time over time. Reaction times are relatively stable across time and changed in similar ways in regular and test trials.
 
 ```{r, fig.height = 3, fig.cap = "Reactions time across trials (continous across sessions) for regular and test trials. light dots represent individual trials. Regression line gives a smoothed conditional mean.", out.width="100%"}
 rt_data%>%
@@ -77,7 +99,7 @@ rt_data%>%
   geom_point(alpha = .25)+
   geom_smooth(col = "firebrick", method = "loess")+
   facet_grid(~condition, scales = "free_x")+
-  labs(x = "Trial (continous across sessions)", y = "Reaction time")+
+  labs(x = "Trial (continous across sessions)", y = "Reaction time (ms)")+
   scale_color_colorblind()+
   theme_minimal()
 ```
@@ -101,9 +123,13 @@ regular_data <- data %>%
 
 #### Comparison to chance
 
-We used a Bayesian generalized linear mixed model to analyze performance. In such a model, an intercept of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we inferred that if the 95% credible interval around the intercept estimate did not include 0, performance is reliably above chance.
+We used a Bayesian generalized linear mixed model to analyze performance. Our model hat the following structure: 
 
-All models use default priors as implemented in the `brms` package.
+`correct ~ 1 + (z_trial | SampleSound )`
+
+In this a model, the intercept models the average rate of correct responses in link space. A value of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we inferred that if the 95% credible interval around the intercept did not include 0, performance was reliably above chance.
+
+All models use default priors as implemented in the `brms` package. 
 
 ```{r, cache = T}
 # model takes a minute or two to initialize and run.
@@ -136,7 +162,7 @@ bm_test%>%
 
 ##### Prior sensitivity analysis
 
-Here we explore the effect of different prior distributions for the intercept term on the results. The default prior is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`.
+Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`.
 
 ```{r}
 # weak_prior <- prior(normal(0, 10), class="Intercept")
