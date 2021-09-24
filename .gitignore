@@ -6,3 +6,7 @@
 
 
 Java Program/*
+
+*.log
+*_cache/
+*_files/

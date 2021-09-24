@@ -1,19 +1,26 @@
 ---
 title: "Bo-NO-bouba-kiki: Picture-word mapping but not sound symbolism in a language trained bonobo"
 subtitle: "Supplementary material"
-author: "Konstantina Margiotoudi, Manuel Bohn, Natalie Schwob, Jared Taglialatela, Friedemann Pulvermüller, Amanda Epping, Ken Schweller, Matthias Allritz"
+author: 
+  - "Konstantina Margiotoudi"
+  - "Manuel Bohn"
+  - "Natalie Schwob"
+  - "Jared Taglialatela"
+  - "Friedemann Pulvermüller"
+  - "Amanda Epping"
+  - "Ken Schweller"
+  - "Matthias Allritz"
 output: 
+  bookdown::pdf_document2:
+    toc: false 
+    number_sections: false    
   bookdown::html_document2:
     toc: yes
     toc_float: true
     fig_caption: yes
     #code_folding: hide
     number_sections: false
-  bookdown::pdf_document2:
-    toc: yes 
-    number_sections: false    
 #bibliography: library.bib
-#csl: pnas.csl
 #header-includes:
 #  \usepackage{caption}
 #  \renewcommand{\figurename}{Supplementary Figure}
@@ -50,37 +57,65 @@ hdi_lower<- function(s){
 data <- read_csv("../data/data.csv")
 ```
 
+# Data and code availability
+
+All data and code associated with the study can be found in the following online repository: https://github.com/manuelbohn/bonoboubakiki
+
 # Power analysis
 
-We conducted a power analysis to specify the number of test trials in the experiment. The details of this analysis can be found in the file `/analysis/power_analysis.Rmd`. The results of this power analysis suggested that when assuming a true effect of 65% correct responses with 300 test trials our model would support the conclusion that performance was above chance in 88/100 cases.  
+We conducted a power analysis to specify the number of test trials in the experiment. The details of this analysis can be found in the file [`/analysis/power_analysis.Rmd](https://github.com/manuelbohn/bonoboubakiki/blob/master/analysis/power_analysis.Rmd). The results of this power analysis suggested that when assuming a true effect of 65% correct responses with 300 test trials our model would support the conclusion that performance was above chance in 88/100 cases (see Figure \@ref(fig:simres)).
+
+```{r, cache = T}
+sim_res_300_p65 <-readRDS("saves/sim_300_p65.rds")
+
+sim_res_int_p65 <- sim_res_300_p65 %>%
+  filter(term == "b_Intercept")%>%
+  mutate(estimate = plogis(estimate),
+         lower = plogis(lower),
+         upper = plogis(upper), 
+         inf = ifelse(lower<.5, "true", "false"))
+```
+
+```{r simres, fig.height = 3, fig.cap = "Power analysis based on 100 simulations with a true effect of 65\\% correct responses and 300 test trials. Points show the model intercept for each simulation (with with 95\\% CrI). Simulations in red yielded a wrong conclusion.", out.width="100%"}
+
+ggplot(sim_res_int_p65, aes(x = seed, y = estimate, ymin = lower, ymax = upper, col = inf)) +
+  geom_hline(yintercept = 0.5, color = "black", lty = 2) +
+  ylim(0,1)+
+  geom_pointrange(fatten = 1/2) +
+  labs(x = "Simulation",
+       y = "Proportion correct")+
+  scale_x_continuous(breaks = c(1,100))+
+  scale_color_manual(values = c("black", "firebrick"))+
+  guides(col = F)+
+  theme_minimal()
+```
 
 # Descriptives
 
 ## Number of Trials
 
-Number of trials per condition. There were 30 sessions in total, each with 10 test trials. There are 2 regular trials missing, because of a software error in session 1 and 2 (see main paper for detail). 
+Table \@ref(tab:trialtab) gives the number of trials per condition. There were 30 sessions in total, each with 10 test trials. Because of a software error, two regular trials were missing in session 1 and 2 (see main paper for detail). 
 
-```{r}
+```{r trialtab}
 t1 <- data %>%
   group_by(condition)%>%
-  summarise(n = n())%>%
-  kable()
+  summarise(n = n())
 
 knitr::kable(t1, caption = "Number of trials per condition.", digits = 2, align = "l")
 ```
 
-## Reaction times
+# Reaction times
 
-Visualize reaction time by correct choice and trial type to check if responses were slower / faster in test trials compared to regular trials. Responses seemed to be faster in test trials, but the two distributions still overlap considerably. 
+Figure \@ref(fig:rtplot) visualizes the reaction times by correct choice and trial type. Responses seemed to be faster in test trials, but the two distributions still overlap considerably. 
 
-```{r, fig.height = 3, fig.cap = "Reactions times for regular and test trials split by correct and incorrect responses.", out.width="100%"}
+```{r rtplot, fig.height = 3, fig.cap = "Reactions times for regular and test trials split by correct and incorrect responses.", out.width="100%"}
 rt_data <- data%>%
   mutate(correct = ifelse(correct == 1, "correct", "incorrect"))
 
 rt_plot <- ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = correct))+
   geom_density(alpha = .3)+
   xlim(0,6000)+
-  xlab("Reaction Time")+
+  xlab("Reaction Time (ms)")+
   ylab("")+
   scale_color_colorblind(name = "Condition")+
   scale_fill_colorblind(name = "Condition")+
@@ -91,11 +126,13 @@ rt_plot <- ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = 
         legend.position = c(0.7,0.6),
         legend.direction = "vertical",
         legend.box = "horizontal")
+
+rt_plot
 ```
 
-Change in reaction time over time. Reaction times are relatively stable across time and changed in similar ways in regular and test trials.
+Figure \@ref(fig:rtrial) shows the change in reaction time over time. Reaction times are relatively stable across time and changed in similar ways in regular and test trials.
 
-```{r, fig.height = 3, fig.cap = "Reactions time across trials (continous across sessions) for regular and test trials. light dots represent individual trials. Regression line gives a smoothed conditional mean.", out.width="100%"}
+```{r rtrial, fig.height = 3, fig.cap = "Reactions time across trials (continous across sessions) for regular and test trials. Light dots represent individual trials. Regression line gives a smoothed conditional mean.", out.width="100%"}
 rt_data%>%
   group_by(condition)%>%
   mutate(trial_cont = 1:length(trial))%>%
@@ -105,12 +142,11 @@ rt_data%>%
   facet_grid(~condition, scales = "free_x")+
   labs(x = "Trial (continous across sessions)", y = "Reaction time (ms)")+
   scale_color_colorblind()+
+  guides(col = F)+
   theme_minimal()
 ```
 
 # Results
-
-## Statistical analysis
 
 ```{r}
 test_data <- data %>%
@@ -123,17 +159,15 @@ regular_data <- data %>%
 
 ```
 
-### Test trials 
+## Test trials 
 
-#### Comparison to chance
+### Comparison to chance
 
-We used a Bayesian generalized linear mixed model to analyze performance. Our model hat the following structure: 
+We used a Bayesian generalized linear mixed model with a logit link to analyze performance. Our model hat the following structure: 
 
 `correct ~ 1 + (z_trial | SampleSound )`
 
-In this a model, the intercept models the average rate of correct responses in link space. A value of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we inferred that if the 95% credible interval around the intercept did not include 0, performance was reliably above chance.
-
-All models use default priors as implemented in the `brms` package. 
+In this a model, the intercept models the average rate of correct responses. A value of 0 in link space corresponds to a proportion of correct choices of 0.5. Thus, we inferred that if the 95% credible interval (CrI) around the posterior estimate for the intercept did not include 0, performance was reliably above chance. Figure \@ref(fig:ttmodel) visualizes the posterior distribution based on our model. It shows that the 95%CrI overlaps with 0. We therefore concluded that Kanzi's performance in test trials was not reliably above chance. 
 
 ```{r, cache = T}
 # model takes a minute or two to initialize and run.
@@ -152,21 +186,21 @@ All models use default priors as implemented in the `brms` package.
 bm_test <-readRDS("saves/model_test.rds")
 ```
 
-```{r, fig.cap = "Estimate for intercept term (with 95 \\% credible interval) in the model for test trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
+```{r ttmodel, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for test trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
 bm_test%>%
   spread_draws(b_Intercept)%>%
   ggplot(aes(x = b_Intercept, fill = stat(x < -0.08 | x > 0.41))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
-  labs("Intercept", y = "Density")+
+  labs(x = "Model intercept", y = "Density")+
   scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
   guides(fill = F)+
   theme_minimal()
 ```
 
-##### Prior sensitivity analysis
+#### Prior sensitivity analysis
 
-Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`.
+The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
 
 ```{r}
 # weak_prior <- prior(normal(0, 10), class="Intercept")
@@ -224,7 +258,7 @@ Here we explore the effect of different prior distributions for the intercept es
 prior_plot <- readRDS("saves/prior_sensitivity.rds")
 ```
 
-```{r, fig.cap = "Estimate for intercept term (with 95 \\% confidence interval) in the model for test trials with different prior distributions. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
+```{r priorsens, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for test trials with different prior distributions. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
 
 prior_plot%>%
   mutate(Prior = factor(Prior, levels = c("default", "weak","medium","strong")))%>%
@@ -236,18 +270,19 @@ prior_plot%>%
   theme_minimal()
 ```
 
-##### Subset analysis
-
-In McCormick et al. (2015), some pseudo words were rated as more sound symbolic than others. These words were: `keke`,`kiki`,`pepe`,`pipi`,`lulu`,`lolo`,`mumu`,`momo`,`nono`,`nunu`. Here we re-run the model on a subset of the test trials that included only these pseudo words. 
-
-This reduces the number of trials to `r length(test_data_sel$SampleSound)`.
+#### Subset analysis
 
 ```{r}
-# sel_words = c("keke","kiki","pepe","pipi","lulu","lolo","mumu","momo","nono","nunu")
-# 
-# test_data_sel <- test_data%>%
-#   mutate(SampleSound = substr(SampleSound, 1, nchar(SampleSound)-4))%>%
-#   filter(SampleSound %in% sel_words)
+sel_words = c("keke","kiki","pepe","pipi","lulu","lolo","mumu","momo","nono","nunu")
+
+test_data_sel <- test_data%>%
+  mutate(SampleSound = substr(SampleSound, 1, nchar(SampleSound)-4))%>%
+  filter(SampleSound %in% sel_words)
+```
+
+In McCormick et al. (2015), some pseudo words were rated as more sound symbolic than others. These words were: `keke`,`kiki`,`pepe`,`pipi`,`lulu`,`lolo`,`mumu`,`momo`,`nono`,`nunu`. Given that these words are perceived as more sound symbolic in humans, Kanzi's performance might have been higher in trials with just these words. We therefore re-ran the model on a subset of the test trials that included only these words. This reduces the number of trials to `r length(test_data_sel$SampleSound)`. Figure \@ref(fig:ttsel) shows that the average rate of correct responses was the same when estimated based on trials with only highly sound symbolic pseudo words compared to all trials.
+
+```{r}
 # 
 # bm_test_sel <- brm(correct ~ 1 + (z_trial | SampleSound ),
 #           data = test_data_sel,
@@ -272,7 +307,7 @@ sel_plot <- readRDS("saves/sel_plot.rds")
 
 ```
 
-```{r, fig.cap = "Estimate for intercept term (with 95 \\% confidence interval) in the model for test trials based on all trials (left) and a subset of trials with words that had high sound symbolic ratings in McCormick et al. (2015). Dashed line shows chance level (in link space).", out.width="100%", fig.height = 3}
+```{r ttsel, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for test trials based on all trials (left) and a subset of trials with words that had high sound symbolic ratings in McCormick et al. (2015). Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
 
 sel_plot%>%
   ggplot(aes(x = Data, y = Estimate))+
@@ -283,9 +318,13 @@ sel_plot%>%
   theme_minimal()
 ```
 
-#### Shape preference
+### Shape preference
 
-In test trials, Kanzi either had to match a round sound to a round shape or a edgy sound to a edgy shape to be correct. 
+For humans, it has been repeatedly found that sound symbolism effects are stronger for round shapes compared to edgy shapes. We therefore ran a model estimating the rate of correct responses on test trials with round compared to edgy shapes. This model had the following structure: 
+
+`correct ~ test_shape + (z_trial | SampleSound )`
+
+Figure \@ref(fig:tshape) shows that while performance was slightly higher with round compared to edgy shapes, it was nevertheless not reliably different from a level expected by chance. 
 
 ```{r, cache = T}
 # load .rds file if you don't want to run the model
@@ -304,7 +343,7 @@ bm_shape <-readRDS("saves/model_shape.rds")
 
 ```
 
-```{r, fig.cap = "Posterior estimates (with 95 \\% credible interval) for test trials with round or edgy shapes. Dashed line shows chance level (in link space).", out.width="100%", fig.height=4}
+```{r tshape, fig.cap = "Posterior estimates (with 95\\% CrI) for test trials with round or edgy shapes. Dashed line shows chance level (in link space).", out.width="100%", fig.height=3}
 bm_shape%>%
   spread_draws(b_Intercept,b_test_shaperound)%>%
   mutate(edgy = b_Intercept,
@@ -320,9 +359,15 @@ bm_shape%>%
   theme_minimal()
 ```
 
-### Regular trials
+## Regular trials
 
-#### Comparison to chance
+### Comparison to chance
+
+Test trials were embedded in regular trials in which Kanzi had to match a word to a picture (cropped and converted to gray scale). We analysed these regular trials in the same way as the test trials using the following model: 
+
+`correct ~ 1 + (z_trial | SampleSound )`
+
+Figure \@ref(fig:rtmodel) shows that the posterior estimate for the intercept was clearly positive and the 95% CrI did not overlap with 0. Thus, Kanzi was clearly able to matcht the sounds to the correct pictures. 
 
 ```{r, cache = T}
 # model takes long time to run
@@ -340,21 +385,48 @@ bm_shape%>%
 bm_regular <- readRDS("saves/model_regular.rds")
 ```
 
+```{r rtmodel, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for regular trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
 
-```{r}
 bm_regular%>%
   spread_draws(b_Intercept)%>%
   ggplot(aes(x = b_Intercept, fill = stat(x < 1.71 | x > 2.30))) +
   stat_halfeye(alpha = .7)+
   geom_vline(xintercept = 0, linetype = "dashed") +
-  xlab("Intercept")+
+  labs(x = "Model intercept", y = "Density")+
   scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
   guides(fill = F)+
   theme_minimal()
 ```
 
+## Results by word
+
+Figure \@ref(fig:resw) shows the proportion of correct responses for each word used in regular and test trials. Each regular word appeared between 26 and 28 times and each sound symbolic test word appeared 15 times.
+
+```{r resw, cache = T,  fig.cap="Proportion of correct responses (with 95\\% confidence interval) for each word for regular and test trials.", out.width="100%", fig.height=12}
+
+data%>%
+  mutate(SampleSound = substr(SampleSound, 1, nchar(SampleSound)-4),
+         SampleSound = tolower(SampleSound))%>%
+  group_by(condition,SampleSound)%>%
+  tidyboot_mean(col = correct)%>%
+  mutate(SampleSound = fct_reorder(SampleSound, desc(mean))) %>%
+  ggplot(aes(x = mean, y =  SampleSound, col = condition))+
+  geom_vline(xintercept = .5, lty = 2, alpha = .75)+
+  geom_pointrange(aes(xmax = ci_upper, xmin = ci_lower, col = condition),pch = 5)+
+  facet_grid(condition~., scales = "free_y", space='free')+
+  theme_minimal()+
+  labs(x="Proportion correct", y= "Word")+
+  xlim(0,1)+
+  guides(col = F)+
+  #theme(axis.text.x=element_text(angle = 45, vjust = 1, hjust = 1))+
+  scale_color_colorblind()
+  
+```
+
 
 # Visualizations for manuscript
+
+Figure \@ref(fig:msfig) reproduces Figure 2 from the main manuscript.
 
 ```{r, cache = T}
 # data from individual sessions
@@ -396,8 +468,6 @@ sess_plot <- ggplot(plot_session, aes(x = session, col = condition))+
   theme_minimal()+
   theme(legend.position = c(0.5,0.1),
         legend.direction = "horizontal")
-
-
 ```
 
 ```{r, cache=T}
@@ -432,7 +502,7 @@ shape_plot <- ggplot()+
   theme_minimal()
 ```
 
-```{r, fig.cap="(A) Proportion of correct choices in regular and test trials. (B) Distribution of reaction times in regular and test trials for correct and incorrect choices. (C) Proportion of correct choices in each session for regular and test trials. (D) Proportion of correct choices in test trials with either edgy or round target shapes. In A and D: Diamonds and error bars represent the mean and 95\\% CrI based on the models’ posterior distribution. Transparent dots show horizontally jittered session means of the data.", out.width="100%", fig.height=6}
+```{r msfig, fig.cap="(A) Proportion of correct choices in regular and test trials. (B) Distribution of reaction times in regular and test trials for correct and incorrect choices. (C) Proportion of correct choices in each session for regular and test trials. (D) Proportion of correct choices in test trials with either edgy or round target shapes. In A and D: Diamonds and error bars represent the mean and 95\\% CrI based on the models’ posterior distribution. Transparent dots show horizontally jittered session means of the data.", out.width="100%", fig.height=4, fig.width = 10}
 
 ggarrange(
   
