@@ -34,7 +34,6 @@ library(tidyverse)
 library(brms)
 library(broom)
 library(ggthemes)
-library(lme4)
 library(tidyboot)
 library(ggpubr)
 library(tidybayes)
@@ -203,57 +202,72 @@ bm_test%>%
 The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
 
 ```{r}
-# weak_prior <- prior(normal(0, 10), class="Intercept")
-# medium_prior <- prior(normal(0, 5), class="Intercept")
-# strong_prior <- prior(normal(0, 1), coef="Intercept")
-# 
-# bm_test_weak_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
-#           data = test_data,
-#           family = bernoulli(),
-#           cores = 4,
-#           chains = 4,
-#           prior = weak_prior,
-#           iter = 5000,
-#           control = list(adapt_delta = 0.95))
-# 
-# saveRDS(bm_test_weak_prior, "saves/model_test_weak_prior.rds")
-# 
-# bm_test_weak_prior <-readRDS("saves/model_test_weak_prior.rds")
-# 
-# bm_test_medium_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
-#           data = test_data,
-#           family = bernoulli(),
-#           cores = 4,
-#           chains = 4,
-#           prior = medium_prior,
-#           iter = 5000,
-#           control = list(adapt_delta = 0.95))
-# 
-# saveRDS(bm_test_medium_prior, "saves/model_test_medium_prior.rds")
-# 
-# bm_test_medium_prior <-readRDS("saves/model_test_medium_prior.rds")
-# 
-# bm_test_strong_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
-#           data = test_data,
-#           family = bernoulli(),
-#           cores = 4,
-#           chains = 4,
-#           prior = medium_prior,
-#           iter = 5000,
-#           control = list(adapt_delta = 0.95))
-# 
-# saveRDS(bm_test_strong_prior, "saves/model_test_strong_prior.rds")
-# 
-# bm_test_strong_prior <-readRDS("saves/model_test_strong_prior.rds")
-# 
-# prior_plot <- bind_rows(
-#   fixef(bm_test)%>%as_tibble()%>%mutate(Prior = "default"),
-#   fixef(bm_test_weak_prior)%>%as_tibble()%>%mutate(Prior = "weak"),
-#   fixef(bm_test_medium_prior)%>%as_tibble()%>%mutate(Prior = "medium"),
-#   fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "strong")
-# )
-# 
-# saveRDS(prior_plot, "saves/prior_sensitivity.rds")
+weak_prior <- prior(normal(0, 10), class="Intercept")
+medium_prior <- prior(normal(0, 5), class="Intercept")
+strong_prior <- prior(normal(0, 1), class="Intercept")
+strong_effect_prior <- prior(normal(1, 5), class="Intercept")
+
+bm_test_weak_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+          data = test_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          prior = weak_prior,
+          iter = 5000,
+          control = list(adapt_delta = 0.95))
+
+saveRDS(bm_test_weak_prior, "saves/model_test_weak_prior.rds")
+
+bm_test_weak_prior <-readRDS("saves/model_test_weak_prior.rds")
+
+bm_test_medium_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+          data = test_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          prior = medium_prior,
+          iter = 5000,
+          control = list(adapt_delta = 0.95))
+
+saveRDS(bm_test_medium_prior, "saves/model_test_medium_prior.rds")
+
+bm_test_medium_prior <-readRDS("saves/model_test_medium_prior.rds")
+
+bm_test_strong_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+          data = test_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          prior = strong_prior,
+          iter = 5000,
+          control = list(adapt_delta = 0.95))
+
+saveRDS(bm_test_strong_prior, "saves/model_test_strong_prior.rds")
+
+bm_test_strong_prior <-readRDS("saves/model_test_strong_prior.rds")
+
+bm_test_strong_effect_prior <- brm(correct ~ 1 + (z_trial | SampleSound ),
+          data = test_data,
+          family = bernoulli(),
+          cores = 4,
+          chains = 4,
+          prior = strong_effect_prior,
+          iter = 5000,
+          control = list(adapt_delta = 0.95))
+
+saveRDS(bm_test_strong_effect_prior, "saves/model_strong_effect_prior.rds")
+
+bm_test_strong_effect_prior <-readRDS("saves/model_strong_effect_prior.rds")
+
+prior_plot <- bind_rows(
+  fixef(bm_test)%>%as_tibble()%>%mutate(Prior = "default"),
+  fixef(bm_test_weak_prior)%>%as_tibble()%>%mutate(Prior = "weak"),
+  fixef(bm_test_medium_prior)%>%as_tibble()%>%mutate(Prior = "medium"),
+  fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "strong"),
+  fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "strong_effect")
+)
+
+saveRDS(prior_plot, "saves/prior_sensitivity.rds")
 
 prior_plot <- readRDS("saves/prior_sensitivity.rds")
 ```
