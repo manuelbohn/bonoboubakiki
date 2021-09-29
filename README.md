@@ -16,7 +16,9 @@ Pre-registration for the methods and the analyses can be found [here](https://os
 
 -   Analysis code can be found in `analysis/`
 
-    -   `analysis.Rmd` contains all analyses reported in the paper
+    -   `analysis.pdf` presents the supplementary material associated with the study
+
+    -   `analysis.Rmd` contains the code for all analyses reported in the paper and the supplementary material
 
     -   `power_analysis.Rmd` contains code for the power analysis
 
