@@ -199,7 +199,7 @@ bm_test%>%
 
 #### Prior sensitivity analysis
 
-The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to six other priors. First, three priors that are also centered at zero (i.e. assume no effect) and then three priors that assume a very strong effect (centered at one which corresponds to 73% correct responses). For every effect type we compare a weakly informative prior `normal(0, 10)`, an informative prior `normal(0, 5)`, and a highly informative prior `normal(0, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
+The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to six other priors. First, three priors that are also centered at `0` (i.e. assume no effect) and then three priors that assume a very strong effect (centered at `1` which corresponds to 73% correct responses). For every effect type we compare a weakly informative prior: `normal(0/1, 10)`, an informative prior: `normal(0/1, 5)`, and a highly informative prior: `normal(0/1, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
 
 ```{r}
 # weak_prior <- prior(normal(0, 10), class="Intercept")
@@ -311,7 +311,7 @@ prior_plot%>%
   ggplot(aes(x = Prior, y = Estimate))+
   geom_hline(yintercept = 0, lty = 2, alpha = .75)+
   geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5))+
-  facet_grid(~Effect)+
+  facet_grid(~Effect, scales = "free_x")+
   labs(y = "Model intercept")+
   ylim(-0.5, 0.5)+
   scale_x_discrete(guide = guide_axis(n.dodge=2))+
