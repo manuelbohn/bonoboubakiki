@@ -244,7 +244,7 @@ bm_test%>%
 
 #### Prior sensitivity analysis
 
-The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to three other priors. A weak prior `normal(0, 10)`, a medium prior `normal(0, 5)`, and a strong prior `normal(0, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
+The model reported above used default priors as implemented in the `brms` package. Here we explore the effect of different prior distributions for the intercept estimate on the results. The default prior in `brms` is `student_t(3, 0, 2.5)`. We compare this to six other priors. First, three priors that are also centered at `0` (i.e. assume no effect) and then three priors that assume a very strong effect (centered at `1` which corresponds to 73% correct responses). For every effect type we compare a weakly informative prior: `normal(0/1, 10)`, an informative prior: `normal(0/1, 5)`, and a highly informative prior: `normal(0/1, 1)`. Figure \@ref(fig:priorsens) visualizes the estimates given the different prior distributions and shows that the prior settings had little to no influence on the posterior estimate in the model. 
 
 ```{r}
 # weak_prior <- prior(normal(0, 10), class="Intercept")
@@ -339,26 +339,27 @@ The model reported above used default priors as implemented in the `brms` packag
 #   fixef(bm_test_weak_prior)%>%as_tibble()%>%mutate(Prior = "weakly informative", Effect = "No effect"),
 #   fixef(bm_test_medium_prior)%>%as_tibble()%>%mutate(Prior = "informative", Effect = "No effect"),
 #   fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "highly informative", Effect = "No effect"),
-#   fixef(bm_test_weak_prior)%>%as_tibble()%>%mutate(Prior = "weakly informative", Effect = "Strong effect"),
-#   fixef(bm_test_medium_prior)%>%as_tibble()%>%mutate(Prior = "informative", Effect = "Strong effect"),
-#   fixef(bm_test_strong_prior)%>%as_tibble()%>%mutate(Prior = "highly informative", Effect = "Strong effect")
+#   fixef(bm_test_weak_effect_prior)%>%as_tibble()%>%mutate(Prior = "weakly informative", Effect = "Strong effect"),
+#   fixef(bm_test_medium_effect_prior)%>%as_tibble()%>%mutate(Prior = "informative", Effect = "Strong effect"),
+#   fixef(bm_test_strong_effect_prior)%>%as_tibble()%>%mutate(Prior = "highly informative", Effect = "Strong effect")
 # )
-
-saveRDS(prior_plot, "saves/prior_sensitivity.rds")
+# 
+# saveRDS(prior_plot, "saves/prior_sensitivity.rds")
 
 prior_plot <- readRDS("saves/prior_sensitivity.rds")
 ```
 
-```{r priorsens, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for test trials with different prior distributions. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
+```{r priorsens, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for test trials with different prior distributions. Dashed line shows chance level (in link space). *No effect* refers to prior distributions centered at zero, *strong effect* refers to prior distributions centered at one.", out.width="100%", fig.height = 2}
 
 prior_plot%>%
   mutate(Prior = factor(Prior, levels = c("default", "weakly informative","informative","highly informative")))%>%
   ggplot(aes(x = Prior, y = Estimate))+
   geom_hline(yintercept = 0, lty = 2, alpha = .75)+
   geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5))+
-  facet_grid(~Effect)+
+  facet_grid(~Effect, scales = "free_x")+
   labs(y = "Model intercept")+
   ylim(-0.5, 0.5)+
+  scale_x_discrete(guide = guide_axis(n.dodge=2))+
   theme_minimal()
 ```
 
