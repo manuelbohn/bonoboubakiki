@@ -131,18 +131,18 @@ rt_plot
 ```
 
 ```{r}
-rt_data_model <- data %>%
-  mutate(z_trial = scale(cont_trial))
-
-bm_rt<- brm(RT ~ condition* z_trial + (z_trial | SampleSound ),
-          data = rt_data_model,
-          family = shifted_lognormal(),
-          cores = 4,
-          chains = 4,
-          iter = 4000,
-          control = list(adapt_delta = 0.95))
-
-saveRDS(bm_rt, "saves/model_rt.rds")
+# rt_data_model <- data %>%
+#   mutate(z_trial = scale(cont_trial))
+# 
+# bm_rt<- brm(RT ~ condition* z_trial + (z_trial | SampleSound ),
+#           data = rt_data_model,
+#           family = shifted_lognormal(),
+#           cores = 4,
+#           chains = 4,
+#           iter = 4000,
+#           control = list(adapt_delta = 0.95))
+# 
+# saveRDS(bm_rt, "saves/model_rt.rds")
 
 bm_rt <-readRDS("saves/model_rt.rds")
 
@@ -164,7 +164,7 @@ rt_data%>%
   theme_minimal()
 ```
 
-```{r rtmodel, fig.cap = "Estimates for condition, trial and interaction between trial and condition (with 95\\% CrI) in the model for reaction times. Dashed line shows chance level. Solid black line highlights a break in the x-axis", out.width="100%", fig.height = 4}
+```{r rtmodel, fig.cap = "Estimates for condition, trial and interaction between trial and condition (with 95\\% CrI) in the model for reaction times. Dashed line shows chance level. Solid black line highlights a break in the x-axis", out.width="100%", fig.height = 3}
 bm_rt%>%
   spread_draws(b_Intercept, b_conditiontest, b_z_trial, `b_conditiontest:z_trial`)%>%
   rename(Intercept = b_Intercept,
@@ -185,11 +185,11 @@ bm_rt%>%
   theme(axis.title.x = element_blank())
 ```
 
-This impression was confirmed in a linear mixed model in which we predicted reaction time by condition and trial. The model had the following structure: 
+This visual impression was confirmed in a linear mixed model in which we predicted reaction time by condition and trial. The model had the following structure: 
 
 `RT ~ condition* z_trial + (z_trial | SampleSound )`
 
-Because reaction times tend to be skewed and have an offset, we modeled the response as a `shifted_lognormal` distribution. Figure \@ref(fig:rtmodel) visualizes the model estimates, showing a negative effect of condition and a small negative effect of trial but no interaction between condition and trial. Thus, reaction times were generally faster in test trials compared to regular trials, but they did not change differently over time for the two trial types.
+Because reaction times tend to be skewed and have an offset, we modeled the response as a `shifted_lognormal` distribution. Figure \@ref(fig:rtmodel) visualizes the model estimates, showing a negative effect of condition and a small negative effect of trial but no interaction between condition and trial. Thus, reaction times were generally faster in test trials compared to regular trials, but they did not change differently over time for the two conditions.
 
 # Results
 
@@ -460,7 +460,7 @@ Test trials were embedded in regular trials in which Kanzi had to match a word t
 
 `correct ~ 1 + (z_trial | SampleSound )`
 
-Figure \@ref(fig:rtmodel) shows that the posterior estimate for the intercept was clearly positive and the 95% CrI did not overlap with 0. Thus, Kanzi was clearly able to matcht the sounds to the correct pictures. 
+Figure \@ref(fig:retmodel) shows that the posterior estimate for the intercept was clearly positive and the 95% CrI did not overlap with 0. Thus, Kanzi was clearly able to matcht the sounds to the correct pictures. 
 
 ```{r, cache = T}
 # model takes long time to run
@@ -478,7 +478,7 @@ Figure \@ref(fig:rtmodel) shows that the posterior estimate for the intercept wa
 bm_regular <- readRDS("saves/model_regular.rds")
 ```
 
-```{r rtmodel, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for regular trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
+```{r retmodel, fig.cap = "Estimate for intercept term (with 95\\% CrI) in the model for regular trials. Dashed line shows chance level (in link space).", out.width="100%", fig.height = 2}
 
 bm_regular%>%
   spread_draws(b_Intercept)%>%
