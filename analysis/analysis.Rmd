@@ -39,6 +39,7 @@ library(ggpubr)
 library(tidybayes)
 library(coda)
 library(knitr)
+library(ggbreak)
 
 hdi_upper<- function(s){
   m <- HPDinterval(mcmc(s))
@@ -105,7 +106,7 @@ knitr::kable(t1, caption = "Number of trials per condition.", digits = 2, align 
 
 # Reaction times
 
-Figure \@ref(fig:rtplot) visualizes the reaction times by correct choice and trial type. Responses seemed to be faster in test trials, but the two distributions still overlap considerably. 
+Figure \@ref(fig:rtplot) visualizes the reaction times by correct choice and trial type. 
 
 ```{r rtplot, fig.height = 3, fig.cap = "Reactions times for regular and test trials split by correct and incorrect responses.", out.width="100%"}
 rt_data <- data%>%
@@ -129,6 +130,24 @@ rt_plot <- ggplot(rt_data, aes(x = RT, col = condition, fill = condition, lty = 
 rt_plot
 ```
 
+```{r}
+rt_data_model <- data %>%
+  mutate(z_trial = scale(cont_trial))
+
+bm_rt<- brm(RT ~ condition* z_trial + (z_trial | SampleSound ),
+          data = rt_data_model,
+          family = shifted_lognormal(),
+          cores = 4,
+          chains = 4,
+          iter = 4000,
+          control = list(adapt_delta = 0.95))
+
+saveRDS(bm_rt, "saves/model_rt.rds")
+
+bm_rt <-readRDS("saves/model_rt.rds")
+
+```
+
 Figure \@ref(fig:rtrial) shows the change in reaction time over time. Reaction times are relatively stable across time and changed in similar ways in regular and test trials.
 
 ```{r rtrial, fig.height = 3, fig.cap = "Reactions time across trials (continous across sessions) for regular and test trials. Light dots represent individual trials. Regression line gives a smoothed conditional mean.", out.width="100%"}
@@ -145,6 +164,33 @@ rt_data%>%
   theme_minimal()
 ```
 
+```{r rtmodel, fig.cap = "Estimates for condition, trial and interaction between trial and condition (with 95\\% CrI) in the model for reaction times. Dashed line shows chance level. Solid black line highlights a break in the x-axis", out.width="100%", fig.height = 4}
+bm_rt%>%
+  spread_draws(b_Intercept, b_conditiontest, b_z_trial, `b_conditiontest:z_trial`)%>%
+  rename(Intercept = b_Intercept,
+         `Condition (test trials)` = b_conditiontest,
+         Trial = b_z_trial,
+         `Condition (test trials) * trial` = `b_conditiontest:z_trial`)%>%
+  pivot_longer(names_to = "Estimate", values_to = "Value", cols = c(Intercept, `Condition (test trials)`, Trial,`Condition (test trials) * trial`))%>%
+  ggplot(aes(x = Value, y = Estimate)) +
+  geom_vline(xintercept = 6.6, size = 2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  stat_halfeye(alpha = .7)+
+  labs(x = "", y = "")+
+  scale_x_break(c(0.1, 6.6), scales = 1, ticklabels = c(6.6, 6.7,6.8, 6.9,7, 7.1, 7.2, 7.3, 7.4))+
+  #facet_wrap(~Estimate, scales = "free")+
+  #scale_fill_manual(values = c("gray80", "firebrick"), name = "95% Credible intervall", labels = c("< 2.5% | > 97.5%","2.5% - 97.5%"))+
+  guides(fill = F)+
+  theme_minimal()+
+  theme(axis.title.x = element_blank())
+```
+
+This impression was confirmed in a linear mixed model in which we predicted reaction time by condition and trial. The model had the following structure: 
+
+`RT ~ condition* z_trial + (z_trial | SampleSound )`
+
+Because reaction times tend to be skewed and have an offset, we modeled the response as a `shifted_lognormal` distribution. Figure \@ref(fig:rtmodel) visualizes the model estimates, showing a negative effect of condition and a small negative effect of trial but no interaction between condition and trial. Thus, reaction times were generally faster in test trials compared to regular trials, but they did not change differently over time for the two trial types.
+
 # Results
 
 ```{r}
@@ -155,7 +201,6 @@ test_data <- data %>%
 regular_data <- data %>%
   filter(condition == "regular")%>%
   mutate(z_trial = scale(cont_trial))
-
 ```
 
 ## Test trials 
