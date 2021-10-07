@@ -1,5 +1,5 @@
 ---
-title: "Bo-NO-bouba-kiki: Picture-word mapping but not sound symbolism in a language trained bonobo"
+title: "Bo-NO-bouba-kiki: Picture-word mapping but not sound symbolic speech-shape mapping in a language trained bonobo"
 subtitle: "Supplementary material"
 author: 
   - "Konstantina Margiotoudi"

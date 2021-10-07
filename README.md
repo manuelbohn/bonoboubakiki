@@ -1,4 +1,4 @@
-# Picture-word mapping but not sound symbolism in a language trained bonobo
+# Bo-NO-bouba-kiki: Picture-word mapping but not sound symbolic speech-shape mapping in a language trained bonobo
 
 ------------------------------------------------------------------------
 
