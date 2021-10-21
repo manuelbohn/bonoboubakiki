@@ -28,7 +28,7 @@ trial_sd = 0.05  # sd across trials
 
 trials = 100 # number of trials 
 
-prop_cor = .65 # same proportion as humans in second experiment
+prop_cor = .65 # assumed proportion correct
 int = log(prop_cor/(1-prop_cor)) # transforming proportion to link space
 
 #set.seed(1)
